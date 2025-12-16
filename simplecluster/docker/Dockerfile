@@ -18,8 +18,8 @@ RUN mkdir -p /var/run/sshd
 
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
-#ARG PASS="root"
-#RUN echo "root:${PASS}" | chpasswd
+ARG PASS="root"
+RUN echo "root:${PASS}" | chpasswd
 
 ARG KEY="id_ed25519"
 RUN mkdir -p /root/.ssh && \

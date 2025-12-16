@@ -4,7 +4,7 @@ cont="clunode"
 key="id_ed25519"
 pass="root"
 
-ssh-keygen -t ed25519 -P "" -f $key
+ssh-keygen -t ed25519 -N "" -f $key
 
 docker build \
   -t $cont \
