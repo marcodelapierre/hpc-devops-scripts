@@ -1,0 +1,10 @@
+version: '3'
+services:
+  n1:
+    image: clunode
+    container_name: n1
+    hostname: n1
+  n2:
+    image: clunode
+    container_name: n2
+    hostname: n2
