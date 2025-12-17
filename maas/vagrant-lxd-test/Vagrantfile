@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
       libvirt.cpus = 4
       libvirt.machine_virtual_size = 32
     end
+    mach.vm.network "forwarded_port", guest: 5240, host: 5240
     mach.vm.provision "file", source: "lxd.cfg", destination: "/tmp/lxd.cfg"
     mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
     mach.vm.provision "shell", inline: $common_script
