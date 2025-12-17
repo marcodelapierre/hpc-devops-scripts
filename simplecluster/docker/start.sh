@@ -1,8 +1,8 @@
 #!/bin/bash
 
 nnodes="2"
-cont="clunode"
 net="clunet"
+cont="clunode"
 
 docker network create -d bridge $net
 

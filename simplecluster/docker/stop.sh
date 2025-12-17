@@ -1,7 +1,6 @@
 #!/bin/bash
 
 nnodes="2"
-cont="clunode"
 net="clunet"
 
 for n in $(seq $nnodes) ; do
