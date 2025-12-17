@@ -1,0 +1,74 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.box_version = "20251126.0.0"
+  config.vm.box_check_update = false
+
+  $pass = ENV["pass"] || "vagrant"
+  $key = ENV["key"] || "id_ed25519"
+
+  $name_base = "node"
+  $ip_base = "192.168.56"
+  $ip_start = 10
+
+  $common_script = <<-SCRIPT
+    apt-get update
+    apt-get install -y openssh-server openssh-client vim curl wget net-tools
+    
+    systemctl enable ssh
+    systemctl start ssh
+    
+    # Configure hosts file for cluster communication
+    cat >> /etc/hosts <<EOF
+#{$ip_base}.#{$ip_start+0} #{$name_base}0
+#{$ip_base}.#{$ip_start+1} #{$name_base}1
+#{$ip_base}.#{$ip_start+2} #{$name_base}2
+EOF
+    
+    chsh -s /bin/bash vagrant
+    
+    echo "vagrant:#{$pass}" | chpasswd
+    
+    sudo -u vagrant mkdir -p /home/vagrant/.ssh
+    sudo -u vagrant cat >> /home/vagrant/.ssh/config <<EOF
+Host #{$ip_base}.*
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+Host #{$name_base}?
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+EOF
+    chmod 700 /home/vagrant/.ssh
+    
+  SCRIPT
+
+  $common_ssh_finalise = <<-SCRIPT
+    if [ -f /home/vagrant/.ssh/authorized_keys ]; then
+      sudo -u vagrant cp /home/vagrant/.ssh/authorized_keys /home/vagrant/.ssh/authorized_keys.bkp
+    fi
+    sudo -u vagrant cat /home/vagrant/.ssh/#{$key}.pub >> /home/vagrant/.ssh/authorized_keys
+    chmod 600 /home/vagrant/.ssh/authorized_keys
+  SCRIPT
+
+  (0..2).each do |i|
+    config.vm.define "#{$name_base}#{i}" do |mach|
+      mach.vm.hostname = "#{$name_base}#{i}"
+      mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_start + i}"
+      
+      mach.vm.provider "libvirt" do |libvirt|
+        libvirt.memory = 1024
+        libvirt.cpus = 1
+        libvirt.machine_virtual_size = 10
+      end
+      
+      mach.vm.provision "shell", inline: $common_script
+      mach.vm.provision "file", source: "#{$key}", destination: "/home/vagrant/.ssh/#{$key}"
+      mach.vm.provision "file", source: "#{$key}.pub", destination: "/home/vagrant/.ssh/#{$key}.pub"
+      mach.vm.provision "shell", inline: $common_ssh_finalise
+    end
+  end
+
+end
