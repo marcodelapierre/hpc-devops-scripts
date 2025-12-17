@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mach="maas2"
+mach="maas"
 
 multipass launch --name $mach -c4 -m8GB -d32GB 24.04
 
