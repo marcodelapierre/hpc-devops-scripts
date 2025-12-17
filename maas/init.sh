@@ -40,7 +40,7 @@ export APIKEY=$(maas apikey --username admin)
 # MAAS admin login
 maas login admin 'http://localhost:5240/MAAS/' $APIKEY
 # Configure MAAS networking (set gateways, vlans, DHCP on etc)
-export SUBNET=10.10.10.0/24
+export SUBNET="10.10.10.0/24"
 export FABRIC_ID=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.fabric_id")
 export VLAN_TAG=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.vid")
 export PRIMARY_RACK=$(maas admin rack-controllers read | jq -r ".[] | .system_id")
