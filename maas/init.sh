@@ -2,6 +2,8 @@
 # script to be run with sudo
 # tested with ubuntu24.04
 
+vmuser="ubuntu"
+
 apt update
 apt install -y jq
 
@@ -49,11 +51,11 @@ maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add LXD as a VM host for MAAS
 maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443 project=maas
 # Automatically create and add ssh keys to MAAS
-ssh-keygen -q -t rsa -N "" -f "/home/ubuntu/.ssh/id_rsa"
-chown ubuntu:ubuntu /home/ubuntu/.ssh/id_rsa /home/ubuntu/.ssh/id_rsa.pub
-chmod 600 /home/ubuntu/.ssh/id_rsa
-chmod 644 /home/ubuntu/.ssh/id_rsa.pub
-maas admin sshkeys create key="$(cat /home/ubuntu/.ssh/id_rsa.pub)"
+ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"
+chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub
+chmod 600 /home/$vmuser/.ssh/id_rsa
+chmod 644 /home/$vmuser/.ssh/id_rsa.pub
+maas admin sshkeys create key="$(cat /home/$vmuser/.ssh/id_rsa.pub)"
 # Wait for images to be synced to MAAS
 #echo "Waiting for images to be synced to MAAS ..."
 #export status="downloading"
