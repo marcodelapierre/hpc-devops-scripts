@@ -7,14 +7,8 @@ vmuser="ubuntu"
 apt update
 apt install -y jq
 
-#snap install maas
-#snap install --channel=latest/stable maas
 snap install --channel=3.5/stable maas
-#snap install --channel=latest/stable lxd
-#snap refresh --channel=latest/stable lxd
 snap install --channel=5.0/stable lxd
-snap refresh --channel=5.0/stable lxd
-snap install maas-test-db
 snap install maas-test-db
 
 # Fetch IPv4 address from the device, setup forwarding and NAT
@@ -26,7 +20,7 @@ iptables -t nat -A POSTROUTING -o $INTERFACE -j SNAT --to $IP_ADDRESS
 # Persist NAT configuration
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-apt-get install iptables-persistent -y
+apt install -y iptables-persistent
 # LXD init
 cat /tmp/lxd.cfg | lxd init --preseed
 # Wait for LXD to be ready
@@ -56,8 +50,4 @@ chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub
 chmod 600 /home/$vmuser/.ssh/id_rsa
 chmod 644 /home/$vmuser/.ssh/id_rsa.pub
 maas admin sshkeys create key="$(cat /home/$vmuser/.ssh/id_rsa.pub)"
-# Wait for images to be synced to MAAS
-#echo "Waiting for images to be synced to MAAS ..."
-#export status="downloading"
-#while [ "$status" != "synced" ]; do export status=$(maas admin rack-controller list-boot-images $PRIMARY_RACK | jq -r .status); sleep 1; done
 
