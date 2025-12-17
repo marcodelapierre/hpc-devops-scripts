@@ -15,22 +15,22 @@ Vagrant.configure("2") do |config|
   $ip_start = 10
 
   $common_script = <<-SCRIPT
-    apt-get update
-    apt-get install -y openssh-server openssh-client vim curl wget net-tools
+    chsh -s /bin/bash vagrant
     
-    systemctl enable ssh
-    systemctl start ssh
+    echo "vagrant:#{$pass}" | chpasswd
     
-    # Configure hosts file for cluster communication
+    # This list has to be updated manually for more/less nodes
     cat >> /etc/hosts <<EOF
 #{$ip_base}.#{$ip_start+0} #{$name_base}0
 #{$ip_base}.#{$ip_start+1} #{$name_base}1
 #{$ip_base}.#{$ip_start+2} #{$name_base}2
 EOF
     
-    chsh -s /bin/bash vagrant
+    apt-get update
+    apt-get install -y openssh-server openssh-client vim curl wget net-tools
     
-    echo "vagrant:#{$pass}" | chpasswd
+    systemctl enable ssh
+    systemctl start ssh
     
     sudo -u vagrant mkdir -p /home/vagrant/.ssh
     sudo -u vagrant cat >> /home/vagrant/.ssh/config <<EOF
@@ -42,7 +42,6 @@ Host #{$name_base}?
     UserKnownHostsFile=/dev/null
 EOF
     chmod 700 /home/vagrant/.ssh
-    
   SCRIPT
 
   $common_ssh_finalise = <<-SCRIPT
