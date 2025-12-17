@@ -3,3 +3,4 @@
 .*.swp
 id_ed25519
 id_ed25519.pub
+lxd_image_id
