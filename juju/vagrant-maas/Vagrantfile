@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.box_version = "20251126.0.0"
+  config.vm.box_check_update = false
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init.sh
+
+    /root/init.sh
+  SCRIPT
+
+  $ip_maas = "10.10.10.1"
+
+  $juju_maas_script = <<-SCRIPT
+    snap install juju 
+
+    maas apikey --username admin >/tmp/apikey
+    sudo -u vagrant sed -i "s;APIKEY;$(cat /tmp/apikey);g" /home/vagrant/credential.yaml
+    rm /tmp/apikey
+    sudo -u vagrant sed -i "s;IP_MAAS;#{$ip_maas};g" /home/vagrant/cloud.yaml
+
+    sudo -u vagrant juju add-cloud maas cloud.yaml
+    sudo -u vagrant juju add-credential maas -f credential.yaml
+    sudo -u vagrant juju clouds --client
+
+    sudo -u vagrant juju bootstrap maas juju-controller
+  SCRIPT
+
+  config.vm.define "maas" do |mach|
+    mach.vm.provider "libvirt" do |libvirt|
+      # Note: I think a larger VM is needed for this deployment
+      libvirt.memory = 8192
+      libvirt.cpus = 4
+      libvirt.machine_virtual_size = 32
+    end
+    mach.vm.network "forwarded_port", guest: 5240, host: 5240
+    mach.vm.provision "file", source: "lxd.cfg", destination: "/tmp/lxd.cfg"
+    mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "file", source: "cloud.yaml", destination: "/home/vagrant/cloud.yaml"
+    mach.vm.provision "file", source: "credential.yaml", destination: "/home/vagrant/credential.yaml"
+    mach.vm.provision "shell", inline: $common_script
+    mach.vm.provision "shell", inline: $juju_maas_script
+  end
+
+end

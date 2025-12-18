@@ -1,0 +1,7 @@
+clouds:
+  maas:
+    type: maas
+    auth-types: [oauth1]
+    regions:
+      default:
+        endpoint: http://IP_MAAS:5240/MAAS/api/2.0

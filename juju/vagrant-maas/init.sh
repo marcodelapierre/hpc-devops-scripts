@@ -1,0 +1,1 @@
+../../maas/init-lxd-dbproduction.sh
