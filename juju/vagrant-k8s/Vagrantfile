@@ -1,0 +1,36 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.box_version = "20251126.0.0"
+  config.vm.box_check_update = false
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init-microk8s.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-microk8s.sh
+
+    /root/init-microk8s.sh
+  SCRIPT
+
+  config.vm.define "juju" do |mach|
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 8192
+      libvirt.cpus = 4
+      libvirt.machine_virtual_size = 50
+    end
+    mach.vm.network "forwarded_port", guest: 5240, host: 5240
+    mach.vm.provision "file", source: "init-microk8s.sh", destination: "/home/vagrant/init-microk8s.sh"
+    mach.vm.provision "shell", inline: $common_script
+    mach.vm.provision "shell", inline: "snap install juju"
+    mach.vm.provision "shell", inline: "sudo -u vagrant juju clouds --client"
+    mach.vm.provision "shell", inline: "sudo -u vagrant juju bootstrap microk8s juju-controller"
+  end
+
+end
