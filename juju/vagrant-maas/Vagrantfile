@@ -29,14 +29,14 @@ Vagrant.configure("2") do |config|
     rm /tmp/apikey
     sudo -u vagrant sed -i "s;IP_MAAS;#{$ip_maas};g" /home/vagrant/cloud.yaml
 
-    sudo -u vagrant juju add-cloud maas cloud.yaml
-    sudo -u vagrant juju add-credential maas -f credential.yaml
+    sudo -u vagrant juju add-cloud --client maas /home/vagrant/cloud.yaml
+    sudo -u vagrant juju add-credential --client maas -f /home/vagrant/credential.yaml
     sudo -u vagrant juju clouds --client
 
-    sudo -u vagrant juju bootstrap maas juju-controller
+    sudo -u vagrant juju bootstrap --bootstrap-base ubuntu@22.04 maas juju-controller
   SCRIPT
 
-  config.vm.define "maas" do |mach|
+  config.vm.define "juju" do |mach|
     mach.vm.provider "libvirt" do |libvirt|
       # Note: I think a larger VM is needed for this deployment
       libvirt.memory = 8192
