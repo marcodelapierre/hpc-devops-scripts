@@ -8,3 +8,4 @@ Currently targeting the following use cases:
 - Juju application orchestrator
 - Warewulf cluster manager
 - Kubernetes orchestrator
+- OpenNebula VM platform
