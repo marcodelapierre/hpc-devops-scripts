@@ -1,1 +1,1 @@
-../init-dbtest.sh
+../init-lxd-dbtest.sh
