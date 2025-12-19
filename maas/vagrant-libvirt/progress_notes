@@ -24,4 +24,5 @@ issues I can think of:
 - virsh not working/setup properly (test full virsh/virt-install cycle from maas machine?)
 - maas setup for virsh not complete
 - more subtle errors that cause erratic problems
-- would a vm-host setup work??
+- review maas-sandbox files
+- would a vm-host setup work?? (lxd is handier, but might help to understand)
