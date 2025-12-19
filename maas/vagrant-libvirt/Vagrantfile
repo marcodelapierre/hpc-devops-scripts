@@ -1,0 +1,99 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.box_version = "20251126.0.0"
+  config.vm.box_check_update = false
+
+  $pass = ENV["pass"] || "vagrant"
+  $key = ENV["key"] || "id_ed25519"
+
+  $host_user = ENV["USER"]
+  $ip_addr_base = "10.10.10"
+  $net_name = "maas-net"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    export host_ip=$(ip route get 8.8.8.8 | head -1 | cut -z -d' ' -f3)
+
+    mv /home/vagrant/init.sh /root/
+    sed -i \
+      -e 's;HOST_USER;#{$host_user};g' \
+      -e "s;HOST_IP;$host_ip;g" \
+      -e 's;IP_ADDR_BASE;#{$ip_addr_base};g' \
+    /root/init.sh
+
+    mkdir -p /root/.ssh
+    mv /home/vagrant/#{$key} /root/.ssh
+    chmod 700 /root/.ssh
+    chmod 600 /root/.ssh/#{$key}
+    chown root:root /root/.ssh/#{$key}
+
+    mv /home/vagrant/ssh_config /root/.ssh/config
+    sed -i \
+      -e 's;HOST_USER;#{$host_user};g' \
+      -e "s;HOST_IP;$host_ip;g" \
+      -e 's;KEY;#{$key};g' \
+    /root/.ssh/config
+    chown root:root /root/.ssh/config
+
+    ssh vagrant_host echo Host Ok.
+
+    /root/init.sh
+  SCRIPT
+
+
+  config.vm.define "maas" do |mach|
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 6144
+      libvirt.cpus = 2
+      libvirt.machine_virtual_size = 20
+    end
+
+    mach.vm.network "forwarded_port", guest: 5240, host: 5240
+    mach.vm.network "private_network", ip: "#{$ip_addr_base}.2",
+      :libvirt__netmask => "255.255.255.0",
+      :libvirt__forward_mode => 'nat',
+      :libvirt__network_name => "#{$net_name}",
+      :libvirt__dhcp_enabled => false,
+      :dhcp_enabled => false,
+      :autostart => true
+
+    mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "file", source: "ssh_config", destination: "/home/vagrant/ssh_config"
+    mach.vm.provision "file", source: "#{$key}", destination: "/home/vagrant/#{$key}"
+    mach.vm.provision "shell", inline: $common_script
+  end
+
+
+#  (1..2).each do |i|
+  [1].each do |i|
+    config.vm.define "node#{"%02d" % i}", autostart: false do |node|
+      node.vm.provider "libvirt" do |libvirt|
+        libvirt.default_prefix = ""
+        libvirt.memory = 4096
+        libvirt.cpus = 2
+        libvirt.machine_virtual_size = 10
+
+        boot_network = {'network' => "#{$net_name}"}
+        libvirt.boot boot_network
+        libvirt.autostart = false
+        libvirt.mgmt_attach = false
+      end
+
+      node.vm.network :private_network, ip: "#{$ip_addr_base}.#{10+1}",
+        :libvirt__forward_mode => 'nat',
+        :libvirt__network_name => "#{$net_name}",
+        :libvirt__dhcp_enabled => false,
+        :dhcp_enabled => false,
+        :autostart => true,
+        :mac => "0e00000000#{"%02d" % i}"
+    end
+  end
+
+
+end

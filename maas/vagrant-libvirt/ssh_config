@@ -1,0 +1,7 @@
+Host vagrant_host
+  Hostname HOST_IP
+  User HOST_USER
+  IdentityFile /root/.ssh/KEY
+  StrictHostKeyChecking accept-new
+  IdentitiesOnly yes
+  AddKeysToAgent yes
