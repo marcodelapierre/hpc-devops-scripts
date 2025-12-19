@@ -22,11 +22,13 @@ note that when the machine is started by automatic pxe pickup, maas does not kno
 
 issues I can think of:
 - virsh not working/setup properly (test full virsh/virt-install cycle from maas machine?)
-- maas setup for virsh not complete
+- maas setup for virsh not correct
+- maas network setup
 - more subtle errors that cause erratic problems
 ideas:
 - less network and libvirt options?? (auto, mgmt,..)
 - search web for more info on what maas does when it finds a new node up
 - search web for more info on virsh+maas
-- review maas-sandbox files
+- review maas-sandbox files, align more with it
+- e.g. remove virsh vm-hosts (not in maas-sandbox)
 - would a vm-host setup work?? (lxd is handier, but might help to understand)
