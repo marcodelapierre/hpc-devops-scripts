@@ -24,5 +24,9 @@ issues I can think of:
 - virsh not working/setup properly (test full virsh/virt-install cycle from maas machine?)
 - maas setup for virsh not complete
 - more subtle errors that cause erratic problems
+ideas:
+- less network and libvirt options?? (auto, mgmt,..)
+- search web for more info on what maas does when it finds a new node up
+- search web for more info on virsh+maas
 - review maas-sandbox files
 - would a vm-host setup work?? (lxd is handier, but might help to understand)
