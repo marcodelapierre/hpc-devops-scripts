@@ -11,3 +11,4 @@ Currently targeting the following use cases:
 - Warewulf cluster manager
 - Kubernetes orchestrator
 - OpenNebula VM platform
+- Microcloud VM platform (simplified OpenStack)
