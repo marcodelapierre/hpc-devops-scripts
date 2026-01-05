@@ -30,13 +30,14 @@ psqlver=$(psql --version | awk '{print $3}' | cut -c 1-2)
 echo 'host    dbmaas          dbadmin         0/0                     md5' >>/etc/postgresql/$psqlver/main/pg_hba.conf
 
 # Initialise MAAS (postgres case)
-maas init region+rack --database-uri "postgres://dbadmin:dbadmin@localhost/dbmaas" --maas-url http://${IP_ADDRESS}:5240/MAAS
+maas init region+rack --database-uri "postgres://dbadmin:dbadmin@localhost/dbmaas" --maas-url http://localhost:5240/MAAS
 sleep 15
 # Create MAAS admin and grab API key
 maas createadmin --username admin --password admin --email admin
 export APIKEY=$(maas apikey --username admin)
 # MAAS admin login
 maas login admin 'http://localhost:5240/MAAS/' $APIKEY
+
 # Configure MAAS networking (set gateways, vlans, DHCP on etc)
 export SUBNET="IP_ADDR_BASE.0/24"
 export FABRIC_ID=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.fabric_id")
