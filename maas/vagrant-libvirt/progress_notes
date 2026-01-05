@@ -18,9 +18,11 @@ last thing I was testing was a combo of:
 ```
 MACHINE=<from UI>
 sysid=$(maas admin machines read hostname=$MACHINE | jq -r '(.[] | .system_id)')
-uuid=$(virsh -c qemu+ssh://mdelapierre@192.168.1.23/system dominfo node01 |grep UUID | awk '{print $2}'
+uuid=$(virsh -c qemu+ssh://mdelapierre@192.168.1.23/system dominfo node01 |grep UUID | awk '{print $2}')
 maas admin machine update $sysid power_type=virsh power_parameters='{"power_address": "qemu+ssh://mdelapierre@192.168.1.23/system", "power_id": "'$uuid'"}'
 ```
+
+- getting: `Error determining BMC task queue for machine XXX`
 
 not working, but just to note down where I am
 
@@ -38,3 +40,14 @@ ideas:
 - review maas-sandbox files, align more with it
 - e.g. remove virsh vm-hosts (not in maas-sandbox)
 - would a vm-host setup work?? (lxd is handier, but might help to understand)
+
+
+5 Jan 2026
+
+Still not solved, tried most items in the list above
+
+Seems like an issue related to:
+- VM power mgmt/BMC access
+- (maybe) network config
+
+At this point, I am going to go on hold, and focus on the LXD setup
