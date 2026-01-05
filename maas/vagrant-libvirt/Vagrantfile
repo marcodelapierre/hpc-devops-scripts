@@ -11,6 +11,7 @@ Vagrant.configure("2") do |config|
   $key = ENV["key"] || "id_ed25519"
 
   $host_user = ENV["USER"]
+  $host_ip = `ip route get 8.8.8.8 | head -1 | cut -z -d' ' -f7`
   $ip_addr_base = "10.10.10"
   $net_name = "maas-net"
 
@@ -18,12 +19,10 @@ Vagrant.configure("2") do |config|
     chsh -s /bin/bash vagrant
     echo "vagrant:#{$pass}" | chpasswd
 
-    export host_ip=$(ip route get 8.8.8.8 | head -1 | cut -z -d' ' -f3)
-
     mv /home/vagrant/init.sh /root/
     sed -i \
       -e 's;HOST_USER;#{$host_user};g' \
-      -e "s;HOST_IP;$host_ip;g" \
+      -e "s;HOST_IP;#{$host_ip};g" \
       -e 's;IP_ADDR_BASE;#{$ip_addr_base};g' \
     /root/init.sh
 
@@ -36,7 +35,7 @@ Vagrant.configure("2") do |config|
     mv /home/vagrant/ssh_config /root/.ssh/config
     sed -i \
       -e 's;HOST_USER;#{$host_user};g' \
-      -e "s;HOST_IP;$host_ip;g" \
+      -e "s;HOST_IP;#{$host_ip};g" \
       -e 's;KEY;#{$key};g' \
     /root/.ssh/config
     chown root:root /root/.ssh/config
@@ -45,7 +44,6 @@ Vagrant.configure("2") do |config|
 
     /root/init.sh
   SCRIPT
-
 
   config.vm.define "maas" do |mach|
     mach.vm.provider "libvirt" do |libvirt|
@@ -85,7 +83,7 @@ Vagrant.configure("2") do |config|
         libvirt.mgmt_attach = false
       end
 
-      node.vm.network :private_network, ip: "#{$ip_addr_base}.#{10+1}",
+      node.vm.network :private_network, ip: "#{$ip_addr_base}.#{10+i}",
         :libvirt__forward_mode => 'nat',
         :libvirt__network_name => "#{$net_name}",
         :libvirt__dhcp_enabled => false,

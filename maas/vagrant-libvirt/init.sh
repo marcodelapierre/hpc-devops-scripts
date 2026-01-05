@@ -20,6 +20,7 @@ iptables -t nat -A POSTROUTING -o $INTERFACE -j SNAT --to $IP_ADDRESS
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 apt install -y iptables-persistent
+
 # Setup Postgres database
 systemctl disable --now systemd-timesyncd
 apt install -y postgresql
@@ -27,6 +28,7 @@ sudo -i -u postgres psql -c "CREATE USER \"dbadmin\" WITH ENCRYPTED PASSWORD 'db
 sudo -i -u postgres createdb -O "dbadmin" "dbmaas"
 psqlver=$(psql --version | awk '{print $3}' | cut -c 1-2)
 echo 'host    dbmaas          dbadmin         0/0                     md5' >>/etc/postgresql/$psqlver/main/pg_hba.conf
+
 # Initialise MAAS (postgres case)
 maas init region+rack --database-uri "postgres://dbadmin:dbadmin@localhost/dbmaas" --maas-url http://${IP_ADDRESS}:5240/MAAS
 sleep 15
@@ -47,7 +49,8 @@ maas admin vlan update $FABRIC_ID $VLAN_TAG dhcp_on=True primary_rack=$PRIMARY_R
 maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add Libvirt/Virsh as a VM host for MAAS
 # (Not really useful for now)
-maas admin vm-hosts create password=password type=virsh power_address=qemu+ssh://HOST_USER@HOST_IP/system project=maas
+#maas admin vm-hosts create password=password type=virsh power_address=qemu+ssh://HOST_USER@HOST_IP/system project=maas
+
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"
 chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub
