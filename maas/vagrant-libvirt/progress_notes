@@ -3,7 +3,7 @@
 very good progress
 - os images now imported
 - machine is picked by maas -> network approx ok?
-- virsh functional from the maas node (can list host domains)
+- virsh functional from the maas node (can list host domains with `virsh -c qemu+ssh://mdelapierre@192.168.1.23/system list --all`)
 blocker
 - machine crashes at various stages during commissioning&co
 
@@ -14,7 +14,13 @@ in subsequent tests, the process crashes earlier (bmc and others)
 
 last thing I was testing was a combo of:
 - host shell: `vagrant up node01`
-- maas node shell: `maas admin machines create             architecture="amd64/generic"             mac_addresses="0e:00:00:00:00:01"             hostname=node01             power_type=virsh power_parameters='{"power_address": "qemu+ssh://mdelapierre@192.168.121.1/system", "power_id": "node01"}'`
+##- maas node shell: `maas admin machines create             architecture="amd64/generic"             mac_addresses="0e:00:00:00:00:01"             hostname=node01             power_type=virsh power_parameters='{"power_address": "qemu+ssh://mdelapierre@192.168.1.23/system", "power_id": "node01"}'`
+```
+MACHINE=<from UI>
+sysid=$(maas admin machines read hostname=$MACHINE | jq -r '(.[] | .system_id)')
+uuid=$(virsh -c qemu+ssh://mdelapierre@192.168.1.23/system dominfo node01 |grep UUID | awk '{print $2}'
+maas admin machine update $sysid power_type=virsh power_parameters='{"power_address": "qemu+ssh://mdelapierre@192.168.1.23/system", "power_id": "'$uuid'"}'
+```
 
 not working, but just to note down where I am
 
