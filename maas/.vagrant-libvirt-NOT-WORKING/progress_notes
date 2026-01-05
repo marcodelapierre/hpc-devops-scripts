@@ -51,3 +51,9 @@ Seems like an issue related to:
 - (maybe) network config
 
 At this point, I am going to go on hold, and focus on the LXD setup
+
+Useful online repos:
+- https://github.com/marcodelapierre/maas-sandbox
+- https://github.com/phausman/maas-sandbox
+- https://github.com/eoli3n/vagrant-pxe
+- https://github.com/panda1100/warewulf-on-kvm
