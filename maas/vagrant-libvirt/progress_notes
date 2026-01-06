@@ -52,6 +52,13 @@ Seems like an issue related to:
 
 At this point, I am going to go on hold, and focus on the LXD setup
 
+Update: using LXD outside of VM hosts gives the very same errors!
+This suggests that virsh also has to be managed by VM hosts.
+
+I FIXED IT, IT WORKS!!
+It was about giving MAAS the SSH key to control Virsh in the hosts, in the right path: `/var/snap/maas/current/root/.ssh`
+
+
 Useful online repos:
 - https://github.com/marcodelapierre/maas-sandbox
 - https://github.com/phausman/maas-sandbox
