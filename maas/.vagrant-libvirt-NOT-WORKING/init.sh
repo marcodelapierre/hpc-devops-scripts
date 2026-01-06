@@ -49,8 +49,7 @@ maas admin ipranges create type=reserved start_ip=IP_ADDR_BASE.1 end_ip=IP_ADDR_
 maas admin vlan update $FABRIC_ID $VLAN_TAG dhcp_on=True primary_rack=$PRIMARY_RACK
 maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add Libvirt/Virsh as a VM host for MAAS
-# (Not really useful for now)
-#maas admin vm-hosts create password=password type=virsh power_address=qemu+ssh://HOST_USER@HOST_IP/system project=maas
+maas admin vm-hosts create type=virsh power_address=qemu+ssh://HOST_USER@HOST_IP/system project=maas
 
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"

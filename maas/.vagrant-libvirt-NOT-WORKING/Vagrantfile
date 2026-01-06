@@ -43,6 +43,10 @@ Vagrant.configure("2") do |config|
     ssh vagrant_host echo Host Ok.
 
     /root/init.sh
+
+    mkdir -p /var/snap/maas/current/root/.ssh
+    chmod 700 /var/snap/maas/current/root/.ssh
+    cp -p /root/.ssh/#{$key} /var/snap/maas/current/root/.ssh/
   SCRIPT
 
   config.vm.define "maas" do |mach|
@@ -84,11 +88,7 @@ Vagrant.configure("2") do |config|
       end
 
       node.vm.network :private_network, ip: "#{$ip_addr_base}.#{10+i}",
-        :libvirt__forward_mode => 'nat',
         :libvirt__network_name => "#{$net_name}",
-        :libvirt__dhcp_enabled => false,
-        :dhcp_enabled => false,
-        :autostart => true,
         :mac => "0e00000000#{"%02d" % i}"
     end
   end
