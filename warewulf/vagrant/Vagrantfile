@@ -163,7 +163,7 @@ CONF
       node.vm.provider :libvirt do |libvirt|
         libvirt.memory = 4096
         libvirt.cpus = 2
-        libvirt.machine_virtual_size = 10
+        libvirt.storage :file, :size => '10G', :type => 'qcow2'
 
         boot_network = {'network' => "#{$net_name}"}
         libvirt.boot boot_network
