@@ -26,7 +26,7 @@ virt-install \
   --pxe \
   --boot network \
   --virt-type kvm \
-  --os-variant ubuntu24.04 \
+  --os-variant rocky9 \
   --noautoconsole
   
 echo "...Done creating $VM_NAME."

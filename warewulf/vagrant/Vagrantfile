@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
 
   $ww_config_file = <<-WW_CONFIG_FILE
 WW_INTERNAL: 45
-ipaddr: #{$ip_addr_base}.0.1
+ipaddr: #{$ip_addr_base}.0.254
 netmask: #{$net_mask}
 network: #{$ip_addr_base}.0.0
 warewulf:
@@ -114,7 +114,7 @@ ssh:
     wwctl container import docker://ghcr.io/warewulf/warewulf-rockylinux:9 rocky-9
     wwctl container build rocky-9
     wwctl profile set --yes --container rocky-9 "default"
-    wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.1 "default"
+    wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.254 "default"
 
     for i in $(seq 1 #{$numnodes}); do
       NID=$(printf "%02g" $i)
@@ -132,7 +132,7 @@ ssh:
     head.vm.hostname = "warewulf"
 
     head.vm.network "private_network",
-      ip: "#{$ip_addr_base}.0.1",
+      ip: "#{$ip_addr_base}.0.254",
       libvirt__netmask: "#{$net_mask}",
       libvirt__forward_mode: "nat",
       libvirt__network_name: "#{$net_name}",
@@ -149,7 +149,8 @@ ssh:
     head.vm.provision "reload"
     head.vm.provision "shell", inline: <<-SHELL
       cat << 'CONF' | tee /etc/warewulf/warewulf.conf
-#{$ww_config_file}CONF
+#{$ww_config_file}
+CONF
     SHELL
     head.vm.provision "shell", inline: $ww_config_script
   end
@@ -160,15 +161,13 @@ ssh:
       node.vm.hostname = "node#{"%02d" % i}"
       node.vm.synced_folder ".", "/vagrant", disabled: true
       node.vm.provider :libvirt do |libvirt|
-        libvirt.default_prefix = ""
         libvirt.memory = 4096
         libvirt.cpus = 2
         libvirt.machine_virtual_size = 10
 
         boot_network = {'network' => "#{$net_name}"}
         libvirt.boot boot_network
-        #libvirt.autostart = false
-        libvirt.mgmt_attach = false
+        #libvirt.mgmt_attach = false
       end
 
       node.vm.network "private_network",
