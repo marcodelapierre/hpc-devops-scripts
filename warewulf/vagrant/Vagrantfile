@@ -167,7 +167,6 @@ CONF
 
         boot_network = {'network' => "#{$net_name}"}
         libvirt.boot boot_network
-        #libvirt.mgmt_attach = false
       end
 
       node.vm.network "private_network",
