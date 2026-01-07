@@ -15,9 +15,9 @@ Vagrant.configure("2") do |config|
   $ww_setup_script = <<-WW_SETUP
     echo "vagrant:#{$pass}" | chpasswd
 
-    #dnf install -y cloud-utils-growpart
-    #growpart /dev/vda 5
-    #xfs_growfs /dev/vda5
+    dnf install -y cloud-utils-growpart
+    growpart /dev/vda 5
+    xfs_growfs /dev/vda5
 
     dnf config-manager --set-enabled crb
     dnf groupinstall -y "Development Tools"
@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
       nfs-utils \
       {libassuan,gpgme}-devel \
       unzip \
-      ipxe-bootimgs-x86
+      ipxe-bootimgs-{x86,aarch64}
 
     cd
     git clone https://github.com/warewulf/warewulf.git
@@ -62,7 +62,6 @@ Vagrant.configure("2") do |config|
   WW_SETUP
 
   $ww_config_file = <<-WW_CONFIG_FILE
-    cat << 'CONF' | sudo tee /etc/warewulf/warewulf.conf
 WW_INTERNAL: 45
 ipaddr: #{$ip_addr_base}.0.1
 netmask: #{$net_mask}
@@ -104,11 +103,10 @@ ssh:
     - dsa
     - ecdsa
     - ed25519
-CONF
   WW_CONFIG_FILE
 
   $ww_config_script = <<-WW_CONFIG
-    sed -i 's@ExecStart=/usr/bin/wwctl server start@ExecStart=/usr/bin/wwctl server start -d -v@' /usr/lib/systemd/system/warewulfd.service
+    #sed -i 's@ExecStart=/usr/bin/wwctl server start@ExecStart=/usr/bin/wwctl server start -d -v@' /usr/lib/systemd/system/warewulfd.service
     systemctl enable --now warewulfd
 
     wwctl configure --all
@@ -117,10 +115,10 @@ CONF
     wwctl profile set --yes --container rocky-9 "default"
     wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.1 "default"
 
-    for i in $(seq 1 #{$numnodes}); do
-      NID=$(printf "%02g" $i)
-      wwctl node add node$NID.cluster -I #{$ip_addr_base}.2.$i --discoverable true
-    done
+    #for i in $(seq 1 #{$numnodes}); do
+    #  NID=$(printf "%02g" $i)
+    #  wwctl node add node$NID.cluster -I #{$ip_addr_base}.2.$i --discoverable
+    #done
   WW_CONFIG
 
 
@@ -148,8 +146,11 @@ CONF
 
     head.vm.provision "shell", inline: $ww_setup_script
     head.vm.provision "reload"
-    head.vm.provision "shell", inline: $ww_config_file
-    #head.vm.provision "shell", inline: $ww_config_script
+    head.vm.provision "shell", inline: <<-SHELL
+      cat << 'CONF' | tee /etc/warewulf/warewulf.conf
+#{$ww_config_file}CONF
+    SHELL
+    head.vm.provision "shell", inline: $ww_config_script
   end
 
 
