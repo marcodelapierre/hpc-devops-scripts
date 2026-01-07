@@ -3,10 +3,6 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "cloud-image/ubuntu-24.04"
-  config.vm.box_version = "20251126.0.0"
-  config.vm.box_check_update = false
-
   $pass = ENV["pass"] || "vagrant"
   $key = ENV["key"] || "id_ed25519"
 
@@ -50,6 +46,10 @@ Vagrant.configure("2") do |config|
   SCRIPT
 
   config.vm.define "maas" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
     mach.vm.provider "libvirt" do |libvirt|
       libvirt.memory = 6144
       libvirt.cpus = 2
@@ -62,7 +62,6 @@ Vagrant.configure("2") do |config|
       :libvirt__forward_mode => 'nat',
       :libvirt__network_name => "#{$net_name}",
       :libvirt__dhcp_enabled => false,
-      :dhcp_enabled => false,
       :autostart => true
 
     mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
@@ -72,24 +71,22 @@ Vagrant.configure("2") do |config|
   end
 
 
-##  (1..2).each do |i|
-#  [1].each do |i|
-#    config.vm.define "node#{"%02d" % i}", autostart: false do |node|
-#      node.vm.provider "libvirt" do |libvirt|
-#        libvirt.default_prefix = ""
-#        libvirt.memory = 4096
-#        libvirt.cpus = 2
-#        libvirt.machine_virtual_size = 10
-#
-#        boot_network = {'network' => "#{$net_name}"}
-#        libvirt.boot boot_network
-#        libvirt.autostart = false
-#        libvirt.mgmt_attach = false
-#      end
-#
-#      node.vm.network :private_network, ip: "#{$ip_addr_base}.#{10+i}",
-#        :libvirt__network_name => "#{$net_name}",
-#        :mac => "0e00000000#{"%02d" % i}"
-#    end
-#  end
+#  (1..2).each do |i|
+  [1].each do |i|
+    config.vm.define "node#{"%02d" % i}", autostart: false do |node|
+      node.vm.provider "libvirt" do |libvirt|
+        libvirt.default_prefix = ""
+        libvirt.memory = 4096
+        libvirt.cpus = 2
+        libvirt.storage :file, :size => '10G', :type => 'qcow2'
+
+        boot_network = {'network' => "#{$net_name}"}
+        libvirt.boot boot_network
+      end
+
+      node.vm.network :private_network,
+        :libvirt__network_name => "#{$net_name}",
+        :mac => "0e00000000#{"%02d" % i}"
+    end
+  end
 end
