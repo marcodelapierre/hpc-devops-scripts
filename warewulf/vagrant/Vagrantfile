@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   $ww_branch = "v4.5.8"
   $ip_addr_base = "10.0"
   $net_mask = "255.255.252.0"
-  $net_name = "maas-net"
+  $net_name = "ww-net"
 
   $numnodes = 1
 

@@ -8,7 +8,7 @@ fi
 CPUS=2
 MEM=4096
 DISK=10
-NETWORK="maas-net"
+NETWORK="ww-net"
 
 NID="$1"
 
