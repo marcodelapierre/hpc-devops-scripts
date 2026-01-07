@@ -32,19 +32,20 @@ Vagrant.configure("2") do |config|
       libvirt.machine_virtual_size = 40
     end
 
-    head.vm.provision "shell", inline: <<-SHELL
-      dnf install -y cloud-utils-growpart
-      growpart /dev/vda 5
-      xfs_growfs /dev/vda5
-    SHELL
+    $ww_setup_script = <<-WW_SETUP
+      chsh -s /bin/bash vagrant
+      echo "vagrant:#{$pass}" | chpasswd
 
-    head.vm.provision "shell", inline: <<-SHELL
+      #dnf install -y cloud-utils-growpart
+      #growpart /dev/vda 5
+      #xfs_growfs /dev/vda5
+
       dnf groupinstall -y "Development Tools"
       dnf install -y epel-release
       dnf config-manager --set-enabled crb
       dnf install -y golang tftp-server dhcp-server nfs-utils gpgme-devel libassuan-devel
 
-      cd /tmp
+      cd
       git clone https://github.com/warewulf/warewulf.git
       cd warewulf
       git checkout #{$ww_branch}
@@ -66,15 +67,14 @@ Vagrant.configure("2") do |config|
         WWCLIENTDIR=/warewulf
       make all
       make install
+      cd ..
+      rm -rf warewulf
 
       systemctl disable --now firewalld
-
       sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
-    SHELL
+    WW_SETUP
 
-    head.vm.provision "reload"
-
-    head.vm.provision "shell", inline: <<-SHELL
+    $ww_config_file = <<-WW_CONFIG_FILE
       cat << 'CONF' | sudo tee /etc/warewulf/warewulf.conf
 WW_INTERNAL: 45
 ipaddr: #{$ip_addr_base}.254
@@ -108,7 +108,9 @@ nfs:
     mount: false
   systemd name: nfs-server
 CONF
+    WW_CONFIG_FILE
 
+    $ww_config_script = <<-WW_CONFIG
       sed -i 's@ExecStart=/usr/bin/wwctl server start@ExecStart=/usr/bin/wwctl server start -d -v@' /usr/lib/systemd/system/warewulfd.service
       systemctl enable --now warewulfd
 
@@ -120,7 +122,12 @@ CONF
 
       wwctl node add n0001.cluster -I #{$ip_addr_base}.101 --discoverable true
       wwctl node add n0002.cluster -I #{$ip_addr_base}.102 --discoverable true
-    SHELL
+    WW_CONFIG
+
+    head.vm.provision "shell", inline: $ww_setup_script
+    #head.vm.provision "reload"
+    head.vm.provision "shell", inline: $ww_config_file
+    #head.vm.provision "shell", inline: $ww_config_script
   end
 
 
