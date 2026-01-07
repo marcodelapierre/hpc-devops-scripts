@@ -1,10 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 Vagrant.configure("2") do |config|
+
     number_of_node = ENV["NODES"] || 2
-    branch = ENV["BRANCH"] || "v4.5.7"
+    branch = ENV["BRANCH"] || "v4.5.8"
 
     config.vm.define :head do |head|
         head.vm.box = "rockylinux/9"
-        head.vm.box_version = "2.0.0-20230513.0"
+        head.vm.box_version = "6.0.0"
+        head.vm.box_check_update = false
+
         head.vm.hostname = "warewulf"
 
         head.vm.network "private_network",
@@ -12,8 +18,6 @@ Vagrant.configure("2") do |config|
             netmask: "255.255.255.0",
             libvirt__network_name: "pxe",
             libvirt__dhcp_enabled: false
-
-        head.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_version: 4, nfs_udp: false
 
         head.vm.provider :libvirt do |libvirt|
             libvirt.cpu_mode = "host-passthrough"
@@ -112,6 +116,7 @@ CONF
             wwctl node add n0002.cluster -I 192.168.200.102 --discoverable true
         SHELL
     end
+
 
     (1..number_of_node).each do |i|
         config.vm.define :"n000#{i}", autostart: false do |node|
