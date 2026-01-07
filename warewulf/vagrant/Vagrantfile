@@ -12,79 +12,57 @@ Vagrant.configure("2") do |config|
 
   $numnodes = 1
 
-  config.vm.define :ww do |head|
-    head.vm.box = "rockylinux/9"
-    head.vm.box_version = "6.0.0"
-    head.vm.box_check_update = false
-    head.vm.synced_folder ".", "/vagrant", disabled: true
+  $ww_setup_script = <<-WW_SETUP
+    echo "vagrant:#{$pass}" | chpasswd
 
-    head.vm.hostname = "warewulf"
+    #dnf install -y cloud-utils-growpart
+    #growpart /dev/vda 5
+    #xfs_growfs /dev/vda5
 
-    head.vm.network "private_network",
-      ip: "#{$ip_addr_base}.0.1",
-      libvirt__netmask: "#{$net_mask}",
-      libvirt__forward_mode: "nat",
-      libvirt__network_name: "#{$net_name}",
-      libvirt__dhcp_enabled: false,
-      autostart: true
+    dnf config-manager --set-enabled crb
+    dnf groupinstall -y "Development Tools"
+    dnf install -y \
+      git \
+      epel-release \
+      golang \
+      tftp-server \
+      dhcp-server \
+      nfs-utils \
+      {libassuan,gpgme}-devel \
+      unzip \
+      ipxe-bootimgs-x86
 
-    head.vm.provider :libvirt do |libvirt|
-      libvirt.memory = 6144
-      libvirt.cpus = 2
-      libvirt.machine_virtual_size = 40
-    end
+    cd
+    git clone https://github.com/warewulf/warewulf.git
+    cd warewulf
+    git checkout #{$ww_branch}
+    make clean defaults \
+      PREFIX=/usr \
+      BINDIR=/usr/bin \
+      SYSCONFDIR=/etc \
+      DATADIR=/usr/share \
+      LOCALSTATEDIR=/var/lib \
+      SHAREDSTATEDIR=/var/lib \
+      MANDIR=/usr/share/man \
+      INFODIR=/usr/share/info \
+      DOCDIR=/usr/share/doc \
+      SRVDIR=/var/lib \
+      TFTPDIR=/var/lib/tftpboot \
+      SYSTEMDDIR=/usr/lib/systemd/system \
+      BASHCOMPDIR=/etc/bash_completion.d/ \
+      FIREWALLDDIR=/usr/lib/firewalld/services \
+      WWCLIENTDIR=/warewulf
+    make all
+    make install
+    cd ..
+    rm -rf warewulf
 
-    $ww_setup_script = <<-WW_SETUP
-      echo "vagrant:#{$pass}" | chpasswd
+    systemctl disable --now firewalld
+    sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+  WW_SETUP
 
-      #dnf install -y cloud-utils-growpart
-      #growpart /dev/vda 5
-      #xfs_growfs /dev/vda5
-
-      dnf config-manager --set-enabled crb
-      dnf groupinstall -y "Development Tools"
-      dnf install -y \
-        git \
-        epel-release \
-        golang \
-        tftp-server \
-        dhcp-server \
-        nfs-utils \
-        {libassuan,gpgme}-devel \
-        unzip \
-        ipxe-bootimgs-x86
-
-      cd
-      git clone https://github.com/warewulf/warewulf.git
-      cd warewulf
-      git checkout #{$ww_branch}
-      make clean defaults \
-        PREFIX=/usr \
-        BINDIR=/usr/bin \
-        SYSCONFDIR=/etc \
-        DATADIR=/usr/share \
-        LOCALSTATEDIR=/var/lib \
-        SHAREDSTATEDIR=/var/lib \
-        MANDIR=/usr/share/man \
-        INFODIR=/usr/share/info \
-        DOCDIR=/usr/share/doc \
-        SRVDIR=/var/lib \
-        TFTPDIR=/var/lib/tftpboot \
-        SYSTEMDDIR=/usr/lib/systemd/system \
-        BASHCOMPDIR=/etc/bash_completion.d/ \
-        FIREWALLDDIR=/usr/lib/firewalld/services \
-        WWCLIENTDIR=/warewulf
-      make all
-      make install
-      cd ..
-      rm -rf warewulf
-
-      systemctl disable --now firewalld
-      sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
-    WW_SETUP
-
-    $ww_config_file = <<-WW_CONFIG_FILE
-      cat << 'CONF' | sudo tee /etc/warewulf/warewulf.conf
+  $ww_config_file = <<-WW_CONFIG_FILE
+    cat << 'CONF' | sudo tee /etc/warewulf/warewulf.conf
 WW_INTERNAL: 45
 ipaddr: #{$ip_addr_base}.0.1
 netmask: #{$net_mask}
@@ -127,23 +105,46 @@ ssh:
     - ecdsa
     - ed25519
 CONF
-    WW_CONFIG_FILE
+  WW_CONFIG_FILE
 
-    $ww_config_script = <<-WW_CONFIG
-      sed -i 's@ExecStart=/usr/bin/wwctl server start@ExecStart=/usr/bin/wwctl server start -d -v@' /usr/lib/systemd/system/warewulfd.service
-      systemctl enable --now warewulfd
+  $ww_config_script = <<-WW_CONFIG
+    sed -i 's@ExecStart=/usr/bin/wwctl server start@ExecStart=/usr/bin/wwctl server start -d -v@' /usr/lib/systemd/system/warewulfd.service
+    systemctl enable --now warewulfd
 
-      wwctl configure --all
+    wwctl configure --all
 
-      wwctl container import docker://ghcr.io/warewulf/warewulf-rockylinux:9 rocky-9
-      wwctl profile set --yes --container rocky-9 "default"
-      wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.1 "default"
+    wwctl container import docker://ghcr.io/warewulf/warewulf-rockylinux:9 rocky-9
+    wwctl profile set --yes --container rocky-9 "default"
+    wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.1 "default"
 
-      for i in $(seq 1 #{$numnodes}); do
-        NID=$(printf "%02g" $i)
-        wwctl node add node$NID.cluster -I #{$ip_addr_base}.2.$i --discoverable true
-      done
-    WW_CONFIG
+    for i in $(seq 1 #{$numnodes}); do
+      NID=$(printf "%02g" $i)
+      wwctl node add node$NID.cluster -I #{$ip_addr_base}.2.$i --discoverable true
+    done
+  WW_CONFIG
+
+
+  config.vm.define :ww do |head|
+    head.vm.box = "rockylinux/9"
+    head.vm.box_version = "6.0.0"
+    head.vm.box_check_update = false
+    head.vm.synced_folder ".", "/vagrant", disabled: true
+
+    head.vm.hostname = "warewulf"
+
+    head.vm.network "private_network",
+      ip: "#{$ip_addr_base}.0.1",
+      libvirt__netmask: "#{$net_mask}",
+      libvirt__forward_mode: "nat",
+      libvirt__network_name: "#{$net_name}",
+      libvirt__dhcp_enabled: false,
+      autostart: true
+
+    head.vm.provider :libvirt do |libvirt|
+      libvirt.memory = 6144
+      libvirt.cpus = 2
+      libvirt.machine_virtual_size = 40
+    end
 
     head.vm.provision "shell", inline: $ww_setup_script
     head.vm.provision "reload"
