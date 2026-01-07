@@ -112,13 +112,14 @@ ssh:
     wwctl configure --all
 
     wwctl container import docker://ghcr.io/warewulf/warewulf-rockylinux:9 rocky-9
+    wwctl container build rocky-9
     wwctl profile set --yes --container rocky-9 "default"
     wwctl profile set --yes --netdev eth1 --netmask #{$net_mask} --gateway #{$ip_addr_base}.0.1 "default"
 
-    #for i in $(seq 1 #{$numnodes}); do
-    #  NID=$(printf "%02g" $i)
-    #  wwctl node add node$NID.cluster -I #{$ip_addr_base}.2.$i --discoverable
-    #done
+    for i in $(seq 1 #{$numnodes}); do
+      NID=$(printf "%02g" $i)
+      wwctl node add node$NID -I #{$ip_addr_base}.2.$i --discoverable
+    done
   WW_CONFIG
 
 
@@ -139,7 +140,7 @@ ssh:
       autostart: true
 
     head.vm.provider :libvirt do |libvirt|
-      libvirt.memory = 6144
+      libvirt.memory = 4096
       libvirt.cpus = 2
       libvirt.machine_virtual_size = 40
     end
@@ -154,25 +155,25 @@ ssh:
   end
 
 
-#  (1..$numnodes).each do |i|
-#    config.vm.define :"node#{"%02d" % i}", autostart: false do |node|
-#      node.vm.hostname = "node#{"%02d" % i}"
-#      node.vm.synced_folder ".", "/vagrant", disabled: true
-#      node.vm.provider :libvirt do |libvirt|
-#        libvirt.default_prefix = ""
-#        libvirt.memory = 4096
-#        libvirt.cpus = 2
-#        libvirt.machine_virtual_size = 10
-#
-#        boot_network = {'network' => "#{$net_name}"}
-#        libvirt.boot boot_network
-#        libvirt.autostart = false
-#        libvirt.mgmt_attach = false
-#      end
-#
-#      node.vm.network "private_network",
-#        libvirt__network_name: "#{$net_name}",
-#        mac: "0e00000000#{"%02d" % i}"
-#    end
-#  end
+  (1..$numnodes).each do |i|
+    config.vm.define :"node#{"%02d" % i}", autostart: false do |node|
+      node.vm.hostname = "node#{"%02d" % i}"
+      node.vm.synced_folder ".", "/vagrant", disabled: true
+      node.vm.provider :libvirt do |libvirt|
+        libvirt.default_prefix = ""
+        libvirt.memory = 4096
+        libvirt.cpus = 2
+        libvirt.machine_virtual_size = 10
+
+        boot_network = {'network' => "#{$net_name}"}
+        libvirt.boot boot_network
+        #libvirt.autostart = false
+        libvirt.mgmt_attach = false
+      end
+
+      node.vm.network "private_network",
+        libvirt__network_name: "#{$net_name}",
+        mac: "0e00000000#{"%02d" % i}"
+    end
+  end
 end
