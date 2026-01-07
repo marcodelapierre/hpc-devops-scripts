@@ -1,11 +1,12 @@
 #!/bin/bash
 
+NUMNODES=1
 CPUS=2
 MEM=4096
 DISK=10
 NETWORK="maas-net"
 
-for i in 1 ; do
+for i in $(seq 1 $NUMNODES) ; do
   NID=$(printf "%02g" $i)
   VM_NAME="node${NID}"
   MAC_ADDR="0e:00:00:00:00:${NID}"
