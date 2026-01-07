@@ -3,8 +3,13 @@
 
 Vagrant.configure("2") do |config|
 
-  number_of_node = ENV["NODES"] || 2
-  branch = ENV["BRANCH"] || "v4.5.8"
+  $pass = ENV["pass"] || "vagrant"
+
+  $ww_branch = "v4.5.8"
+  $ip_addr_base = "192.168.200"
+  $net_name = "maas-net"
+
+  $numnodes = 1
 
   config.vm.define :head do |head|
     head.vm.box = "rockylinux/9"
@@ -14,15 +19,16 @@ Vagrant.configure("2") do |config|
     head.vm.hostname = "warewulf"
 
     head.vm.network "private_network",
-      ip: "192.168.200.254",
-      netmask: "255.255.255.0",
-      libvirt__network_name: "pxe",
-      libvirt__dhcp_enabled: false
+      ip: "#{$ip_addr_base}.254",
+      libvirt__netmask: "255.255.255.0",
+      libvirt__forward_mode: "nat",
+      libvirt__network_name: "#{net_name}",
+      libvirt__dhcp_enabled: false,
+      autostart: true
 
     head.vm.provider :libvirt do |libvirt|
-      libvirt.cpu_mode = "host-passthrough"
-      libvirt.memory = '8192'
-      libvirt.cpus = '2'
+      libvirt.memory = 6144
+      libvirt.cpus = 2
       libvirt.machine_virtual_size = 40
     end
 
@@ -41,7 +47,7 @@ Vagrant.configure("2") do |config|
       cd /tmp
       git clone https://github.com/warewulf/warewulf.git
       cd warewulf
-      git checkout v4.5.7
+      git checkout #{$ww_branch}
       make clean defaults \
         PREFIX=/usr \
         BINDIR=/usr/bin \
@@ -71,9 +77,9 @@ Vagrant.configure("2") do |config|
     head.vm.provision "shell", inline: <<-SHELL
       cat << 'CONF' | sudo tee /etc/warewulf/warewulf.conf
 WW_INTERNAL: 45
-ipaddr: 192.168.200.254
+ipaddr: #{$ip_addr_base}.254
 netmask: 255.255.255.0
-network: 192.168.200.0
+network: #{$ip_addr_base}.0
 warewulf:
   port: 9873
   secure: false
@@ -83,8 +89,8 @@ warewulf:
   syslog: false
 dhcp:
   enabled: true
-  range start: 192.168.200.50
-  range end: 192.168.200.99
+  range start: #{$ip_addr_base}.50
+  range end: #{$ip_addr_base}.99
   systemd name: dhcpd
 tftp:
   enabled: true
@@ -110,28 +116,32 @@ CONF
 
       wwctl container import docker://ghcr.io/warewulf/warewulf-rockylinux:9 rocky-9
       wwctl profile set --yes --container rocky-9 "default"
-      wwctl profile set --yes --netdev eth1 --netmask 255.255.255.0 --gateway 192.168.200.254 "default"
+      wwctl profile set --yes --netdev eth1 --netmask 255.255.255.0 --gateway #{$ip_addr_base}.254 "default"
 
-      wwctl node add n0001.cluster -I 192.168.200.101 --discoverable true
-      wwctl node add n0002.cluster -I 192.168.200.102 --discoverable true
+      wwctl node add n0001.cluster -I #{$ip_addr_base}.101 --discoverable true
+      wwctl node add n0002.cluster -I #{$ip_addr_base}.102 --discoverable true
     SHELL
   end
 
 
-  (1..number_of_node).each do |i|
-    config.vm.define :"n000#{i}", autostart: false do |node|
-      node.vm.hostname = "n000#{i}"
-      node.vm.network "private_network",
-      libvirt__network_name: "pxe"
-
-      node.vm.provider :libvirt do |compute|
-        compute.cpu_mode = 'host-passthrough'
-        compute.memory = '8192'
-        compute.cpus = '2'
-        boot_network = {'network' => 'pxe'}
-        compute.boot boot_network
-      end
-    end
-  end
-
+#  (1..$numnodes).each do |i|
+#    config.vm.define :"node#{"%02d" % i}", autostart: false do |node|
+#      node.vm.hostname = "node#{"%02d" % i}"
+#      node.vm.provider :libvirt do |libvirt|
+#        libvirt.default_prefix = ""
+#        libvirt.memory = 4096
+#        libvirt.cpus = 2
+#        libvirt.machine_virtual_size = 10
+#
+#        boot_network = {'network' => "#{$net_name}"}
+#        libvirt.boot boot_network
+#        libvirt.autostart = false
+#        libvirt.mgmt_attach = false
+#      end
+#
+#      node.vm.network "private_network",
+#        libvirt__network_name: "#{net_name}",
+#        mac: "0e00000000#{"%02d" % i}"
+#    end
+#  end
 end
