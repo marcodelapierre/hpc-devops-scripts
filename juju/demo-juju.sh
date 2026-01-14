@@ -1,6 +1,6 @@
 #!/bin/bash
 
-juju add-model my-chat-model
+juju add-model chat-app
 
 juju deploy mattermost-k8s --constraints "mem=2G"
 juju deploy postgresql-k8s --channel 14/stable --trust --config profile=testing -n 2
@@ -17,4 +17,4 @@ juju status --relations --color
 # curl <that-IP>:8065/api/v4/system/ping
 
 # Take down the deployment
-# juju destroy-model my-chat-model --destroy-storage
+# juju destroy-model chat-app --destroy-storage
