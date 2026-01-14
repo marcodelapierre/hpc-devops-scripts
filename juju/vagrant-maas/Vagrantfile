@@ -33,7 +33,8 @@ Vagrant.configure("2") do |config|
     sudo -u vagrant juju add-credential --client maas -f /home/vagrant/credential.yaml
     sudo -u vagrant juju clouds --client
 
-    sudo -u vagrant juju bootstrap --bootstrap-base ubuntu@22.04 maas juju-controller
+    # Run manually after Maas has downloaded the OS image
+    #sudo -u vagrant juju bootstrap --bootstrap-base ubuntu@22.04 maas juju-controller-maas
   SCRIPT
 
   config.vm.define "juju" do |mach|
