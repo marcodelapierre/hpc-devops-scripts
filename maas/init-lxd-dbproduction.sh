@@ -8,7 +8,7 @@ apt update
 apt install -y jq
 
 snap install --channel=3.5/stable maas
-snap install --channel=5.0/stable lxd
+snap install --channel=5.21/stable lxd
 
 # Fetch IPv4 address from the device, setup forwarding and NAT
 export IP_ADDRESS=$(ip -j route show default | jq -r '.[].prefsrc')
