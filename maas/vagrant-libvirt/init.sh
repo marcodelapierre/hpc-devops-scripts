@@ -58,3 +58,5 @@ chmod 600 /home/$vmuser/.ssh/id_rsa
 chmod 644 /home/$vmuser/.ssh/id_rsa.pub
 maas admin sshkeys create key="$(cat /home/$vmuser/.ssh/id_rsa.pub)"
 
+# Enable vmuser to admin maas
+sudo -u $vmuser maas login admin 'http://localhost:5240/MAAS/' $APIKEY
