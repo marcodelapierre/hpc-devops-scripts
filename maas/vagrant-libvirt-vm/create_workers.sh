@@ -5,7 +5,7 @@ MEM=4096
 DISK=8
 NETWORK="default"
 VIRT_TYPE="qemu"
-#VIRT_TYPE="kvm"
+VIRT_TYPE="kvm"
 
 for i in 1 ; do
   NID=$(printf "%02g" $i)
