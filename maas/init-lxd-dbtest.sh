@@ -26,7 +26,8 @@ cat /tmp/lxd.cfg | lxd init --preseed
 # Wait for LXD to be ready
 lxd waitready
 # Initialise MAAS
-maas init region+rack --database-uri maas-test-db:/// --maas-url http://${IP_ADDRESS}:5240/MAAS
+#maas init region+rack --database-uri maas-test-db:/// --maas-url http://${IP_ADDRESS}:5240/MAAS
+maas init region+rack --database-uri maas-test-db:/// --maas-url http://localhost:5240/MAAS
 sleep 15
 # Create MAAS admin and grab API key
 maas createadmin --username admin --password admin --email admin
@@ -44,7 +45,7 @@ maas admin vlan update $FABRIC_ID $VLAN_TAG dhcp_on=True primary_rack=$PRIMARY_R
 maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add LXD as a VM host for MAAS
 #maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443 project=maas
-maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443
+maas admin vm-hosts create  password=password  type=lxd power_address=https://localhost:8443
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"
 chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub
