@@ -2,7 +2,7 @@
 
 CPUS=2
 MEM=4096
-DISK=10
+DISK=8
 NETWORK="maas-net"
 
 for i in 1 ; do
