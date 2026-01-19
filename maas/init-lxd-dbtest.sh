@@ -21,10 +21,14 @@ iptables -t nat -A POSTROUTING -o $INTERFACE -j SNAT --to $IP_ADDRESS
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 apt install -y iptables-persistent
+
 # LXD init
 cat /tmp/lxd.cfg | lxd init --preseed
 # Wait for LXD to be ready
 lxd waitready
+# Add vmuser to LXD group
+adduser $vmuser lxd
+
 # Initialise MAAS
 #maas init region+rack --database-uri maas-test-db:/// --maas-url http://${IP_ADDRESS}:5240/MAAS
 maas init region+rack --database-uri maas-test-db:/// --maas-url http://localhost:5240/MAAS
@@ -34,6 +38,7 @@ maas createadmin --username admin --password admin --email admin
 export APIKEY=$(maas apikey --username admin)
 # MAAS admin login
 maas login admin 'http://localhost:5240/MAAS/' $APIKEY
+
 # Configure MAAS networking (set gateways, vlans, DHCP on etc)
 export SUBNET="10.10.10.0/24"
 export FABRIC_ID=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.fabric_id")
@@ -46,6 +51,7 @@ maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add LXD as a VM host for MAAS
 #maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443 project=maas
 maas admin vm-hosts create  password=password  type=lxd power_address=https://localhost:8443
+
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"
 chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub

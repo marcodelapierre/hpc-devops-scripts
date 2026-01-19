@@ -20,10 +20,14 @@ iptables -t nat -A POSTROUTING -o $INTERFACE -j SNAT --to $IP_ADDRESS
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 apt install -y iptables-persistent
+
 # LXD init
 cat /tmp/lxd.cfg | lxd init --preseed
 # Wait for LXD to be ready
 lxd waitready
+# Add vmuser to LXD group
+adduser $vmuser lxd
+
 # Setup Postgres database
 systemctl disable --now systemd-timesyncd
 apt install -y postgresql
@@ -31,6 +35,7 @@ sudo -i -u postgres psql -c "CREATE USER \"dbadmin\" WITH ENCRYPTED PASSWORD 'db
 sudo -i -u postgres createdb -O "dbadmin" "dbmaas"
 psqlver=$(psql --version | awk '{print $3}' | cut -c 1-2)
 echo 'host    dbmaas          dbadmin         0/0                     md5' >>/etc/postgresql/$psqlver/main/pg_hba.conf
+
 # Initialise MAAS (postgres case)
 #maas init region+rack --database-uri "postgres://dbadmin:dbadmin@localhost/dbmaas" --maas-url http://${IP_ADDRESS}:5240/MAAS
 maas init region+rack --database-uri "postgres://dbadmin:dbadmin@localhost/dbmaas" --maas-url http://localhost:5240/MAAS
@@ -40,6 +45,7 @@ maas createadmin --username admin --password admin --email admin
 export APIKEY=$(maas apikey --username admin)
 # MAAS admin login
 maas login admin 'http://localhost:5240/MAAS/' $APIKEY
+
 # Configure MAAS networking (set gateways, vlans, DHCP on etc)
 export SUBNET="10.10.10.0/24"
 export FABRIC_ID=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.fabric_id")
@@ -52,6 +58,7 @@ maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add LXD as a VM host for MAAS
 #maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443 project=maas
 maas admin vm-hosts create  password=password  type=lxd power_address=https://localhost:8443
+
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"
 chown $vmuser:$vmuser /home/$vmuser/.ssh/id_rsa /home/$vmuser/.ssh/id_rsa.pub
