@@ -1,0 +1,14 @@
+<network ipv6='yes'>
+  <name>virshnet</name>
+  <uuid>97f53e9b-40ca-4ebe-8ea1-dff1930162a4</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr1' stp='on' delay='0'/>
+  <mac address='52:54:00:a1:51:51'/>
+  <ip address='10.10.10.1' netmask='255.255.255.0'>
+  </ip>
+</network>
+
