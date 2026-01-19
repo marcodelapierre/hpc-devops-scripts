@@ -24,7 +24,7 @@ apt install -y iptables-persistent
 # Vagrant network configuration
 virsh net-destroy default
 virsh net-undefine default
-virsh net-define default.xml
+virsh net-define /root/default.xml
 virsh net-autostart default
 virsh net-start default
 # Add vmuser to libvirt group
