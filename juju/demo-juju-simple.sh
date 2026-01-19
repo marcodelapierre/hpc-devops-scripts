@@ -3,6 +3,7 @@
 juju add-model simple-db
 
 juju deploy mysql --channel 8.0/stable
+#juju deploy mysql-k8s --channel 8.0/stable
 
 juju status --relations --color
 #juju status --relations --color --watch 1s
