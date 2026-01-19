@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
     echo "vagrant:#{$pass}" | chpasswd
 
     mv /home/vagrant/init.sh /root/
+    cp /home/vagrant/create_workers.sh /root/
     sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init.sh
 
     /root/init.sh
@@ -28,6 +29,7 @@ Vagrant.configure("2") do |config|
     mach.vm.network "forwarded_port", guest: 5240, host: 5240
     mach.vm.provision "file", source: "lxd.cfg", destination: "/tmp/lxd.cfg"
     mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "file", source: "create_workers.sh", destination: "/home/vagrant/create_workers.sh"
     mach.vm.provision "shell", inline: $common_script
   end
 
