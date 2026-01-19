@@ -22,9 +22,11 @@ echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo deb
 apt install -y iptables-persistent
 
 # Vagrant network configuration
-virsh net-define virshnet.xml
-virsh net-autostart virshnet
-virsh net-start virshnet
+virsh net-destroy default
+virsh net-undefine default
+virsh net-define default.xml
+virsh net-autostart default
+virsh net-start default
 # Add vmuser to libvirt group
 adduser $vmuser libvirt
 
@@ -47,12 +49,12 @@ export APIKEY=$(maas apikey --username admin)
 maas login admin 'http://localhost:5240/MAAS/' $APIKEY
 
 # Configure MAAS networking (set gateways, vlans, DHCP on etc)
-export SUBNET="10.10.10.0/24"
+export SUBNET="192.168.122.0/24"
 export FABRIC_ID=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.fabric_id")
 export VLAN_TAG=$(maas admin subnet read "$SUBNET" | jq -r ".vlan.vid")
 export PRIMARY_RACK=$(maas admin rack-controllers read | jq -r ".[] | .system_id")
-maas admin subnet update $SUBNET gateway_ip=10.10.10.1
-maas admin ipranges create type=dynamic start_ip=10.10.10.200 end_ip=10.10.10.254
+maas admin subnet update $SUBNET gateway_ip=192.168.122.1
+maas admin ipranges create type=dynamic start_ip=192.168.122.200 end_ip=192.168.122.254
 maas admin vlan update $FABRIC_ID $VLAN_TAG dhcp_on=True primary_rack=$PRIMARY_RACK
 maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add Libvirt/Virsh as a VM host for MAAS

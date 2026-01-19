@@ -3,7 +3,7 @@
 CPUS=2
 MEM=4096
 DISK=8
-NETWORK="virshnet"
+NETWORK="default"
 VIRT_TYPE="qemu"
 #VIRT_TYPE="kvm"
 
