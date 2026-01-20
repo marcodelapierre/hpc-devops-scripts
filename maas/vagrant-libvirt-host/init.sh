@@ -60,3 +60,7 @@ maas admin sshkeys create key="$(cat /home/$vmuser/.ssh/id_rsa.pub)"
 
 # Enable vmuser to admin maas
 sudo -u $vmuser maas login admin 'http://localhost:5240/MAAS/' $APIKEY
+
+# Configurations
+# Longer deploy timeout
+maas admin maas set-config name=node_timeout value=120

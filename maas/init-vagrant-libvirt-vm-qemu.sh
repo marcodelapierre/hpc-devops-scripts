@@ -74,3 +74,7 @@ cp /home/$vmuser/.ssh/id_rsa /var/snap/maas/current/root/.ssh/
 
 # Enable vmuser to admin maas
 sudo -u $vmuser maas login admin 'http://localhost:5240/MAAS/' $APIKEY
+
+# Configurations
+# Longer deploy timeout
+maas admin maas set-config name=node_timeout value=120
