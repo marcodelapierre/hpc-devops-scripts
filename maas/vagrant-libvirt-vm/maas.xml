@@ -1,5 +1,5 @@
 <network ipv6='yes'>
-  <name>virshnet</name>
+  <name>maas</name>
   <uuid>97f53e9b-40ca-4ebe-8ea1-dff1930162a4</uuid>
   <forward mode='nat'>
     <nat>

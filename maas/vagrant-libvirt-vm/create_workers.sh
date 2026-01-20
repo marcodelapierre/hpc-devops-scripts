@@ -3,7 +3,7 @@
 CPUS=2
 MEM=4096
 DISK=8
-NETWORK="default"
+NETWORK="maas"
 VIRT_TYPE="qemu"
 VIRT_TYPE="kvm"
 
