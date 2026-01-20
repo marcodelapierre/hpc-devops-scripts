@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CPUS=2
+CPUS=1
 MEM=4096
 DISK=8
 NETWORK="maas"
