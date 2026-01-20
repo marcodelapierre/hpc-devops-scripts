@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
     sudo -u vagrant juju clouds --client
 
     # Run manually after Maas has downloaded the OS image
-    #sudo -u vagrant juju bootstrap --bootstrap-base ubuntu@22.04 maas juju-controller-maas
+    #sudo -u vagrant juju bootstrap --config bootstrap-timeout=3600 --bootstrap-base ubuntu@22.04 maas juju-controller-maas
   SCRIPT
 
   config.vm.define "juju" do |mach|
