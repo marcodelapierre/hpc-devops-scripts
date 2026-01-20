@@ -3,7 +3,7 @@
 CPUS=1
 MEM=4096
 DISK=8
-NETWORK="maas-net"
+NETWORK="maas"
 
 for i in 1 ; do
   NID=$(printf "%02g" $i)
@@ -19,7 +19,7 @@ for i in 1 ; do
     --disk size=$DISK,bus=virtio \
     --network network=$NETWORK,mac=$MAC_ADDR,model=virtio \
     --pxe \
-    --boot network \
+    --boot network,hd \
     --virt-type kvm \
     --os-variant ubuntu24.04 \
     --noautoconsole
