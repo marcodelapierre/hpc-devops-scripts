@@ -20,7 +20,7 @@ for i in 1 ; do
     --disk size=$DISK,bus=virtio \
     --network network=$NETWORK,model=virtio \
     --pxe \
-    --boot network \
+    --boot network,hd \
     --virt-type $VIRT_TYPE \
     --os-variant ubuntu22.04 \
     --noautoconsole
