@@ -57,7 +57,7 @@ maas admin vlan update $FABRIC_ID $VLAN_TAG dhcp_on=True primary_rack=$PRIMARY_R
 maas admin maas set-config name=upstream_dns value=8.8.8.8
 # Add LXD as a VM host for MAAS
 #maas admin vm-hosts create  password=password  type=lxd power_address=https://${IP_ADDRESS}:8443 project=maas
-maas admin vm-hosts create  password=password  type=lxd power_address=https://localhost:8443 project=maas
+maas admin vm-hosts create  password=password  type=lxd power_address=https://localhost:8443 ##project=maas
 
 # Automatically create and add ssh keys to MAAS
 ssh-keygen -q -t rsa -N "" -f "/home/$vmuser/.ssh/id_rsa"

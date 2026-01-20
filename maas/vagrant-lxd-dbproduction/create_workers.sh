@@ -11,8 +11,8 @@ lxc init \
   --network lxdbr0 \
   -c limits.cpu=1 \
   -c limits.memory=4GiB \
-  -d root,size=8GiB \
-  --project maas
+  -d root,size=8GiB #\
+#  --project maas
 #lxc start node01 --project maas
 
 #lxc delete node01 --project maas
