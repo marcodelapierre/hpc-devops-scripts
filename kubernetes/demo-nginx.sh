@@ -5,8 +5,8 @@ dep="nginx"
 
 kubectl create ns $ns
 kubectl create deployment $dep --image=nginx -n $ns
-
 kubectl expose deployment $dep --type=NodePort --port=80 --name=${dep}-service -n $ns
+# TODO: fix non working port setup
 
 # Get the NodePort assigned
 node_port=$(kubectl get svc ${dep}-service -n $ns -o jsonpath='{.spec.ports[0].nodePort}')
