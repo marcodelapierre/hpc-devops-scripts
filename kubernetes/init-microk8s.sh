@@ -28,3 +28,7 @@ chmod +x /usr/local/bin/kubectl
 microk8s config >/root/.kube/config
 microk8s config >/home/$vmuser/.kube/config
 chown $vmuser:$vmuser /home/$vmuser/.kube/config
+
+# Stop and start cluster
+#microk8s stop
+#microk8s start
