@@ -10,8 +10,9 @@ Currently targeting the following use cases:
 - Juju application orchestrator
 - Warewulf cluster manager
 - Kubernetes orchestrator
-- OpenNebula VM platform
 - OpenStack VM platform
+- OpenNebula VM platform
+- Basic OSS monitoring stack
 
 Most deployments make use of Vagrant in conjuction with Libvirt. Useful Vagrant plugins include: vagrant-libvirt, vagrant-reload, vagrant-share, vagrant-disksize.  
 Some deployments make use of Multipass, LXD or Docker.
