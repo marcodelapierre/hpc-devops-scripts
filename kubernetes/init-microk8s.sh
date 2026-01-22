@@ -6,8 +6,10 @@ vmuser="ubuntu"
 
 # Install microk8s
 snap install microk8s --classic --channel=1.35
-
 microk8s status --wait-ready
+#microk8s stop
+#microk8s start
+
 for plugin in dns dashboard hostpath-storage ingress ; do
     microk8s enable $plugin
 done
@@ -30,7 +32,3 @@ chmod 700 /home/$vmuser/.kube
 microk8s config >/root/.kube/config
 microk8s config >/home/$vmuser/.kube/config
 chown $vmuser:$vmuser /home/$vmuser/.kube/config
-
-# Stop and start cluster
-#microk8s stop
-#microk8s start

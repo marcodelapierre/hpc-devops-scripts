@@ -36,14 +36,13 @@ adduser $vmuser docker
 
 # Install kind
 # For AMD64 / x86_64
-[ $(uname -m) = x86_64 ] && curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
+curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
 chmod +x /usr/local/bin/kind
 
 kind create cluster
 #kind delete cluster
 
 # Install kubectl
-#alias kubectl='microk8s kubectl'
 #kubectl_ver="$(curl -L -s https://dl.k8s.io/release/stable.txt)"
 kubectl_ver="v1.35.0"
 curl -L "https://dl.k8s.io/release/${kubectl_ver}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
