@@ -1,1 +1,1 @@
-../init-canonical.sh
+../init-canonical-k8s.sh
