@@ -39,7 +39,7 @@ kubectl_ver="v1.35.0"
 curl -L "https://dl.k8s.io/release/${kubectl_ver}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
 chmod +x /usr/local/bin/kubectl
 
-# Configure $vmuser access to k8s
+# Configure root access to k8s
 mkdir -p /home/$vmuser/.kube
 chown -R $vmuser:$vmuser /home/$vmuser/.kube
 chmod 700 /home/$vmuser/.kube
