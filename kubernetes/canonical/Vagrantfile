@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init.sh
+
+    /root/init.sh
+  SCRIPT
+
+  config.vm.define "k8s" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+    #mach.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, disabled: false
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 8192
+      libvirt.cpus = 2
+      libvirt.machine_virtual_size = 20
+    end
+
+    mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "shell", inline: $common_script
+  end
+
+end
