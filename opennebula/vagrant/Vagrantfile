@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init.sh
+
+    /root/init.sh
+  SCRIPT
+
+  config.vm.define "one" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 4096
+      libvirt.cpus = 4
+      libvirt.machine_virtual_size = 80
+    end
+
+    mach.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+
+    mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "shell", inline: $common_script
+  end
+
+end
