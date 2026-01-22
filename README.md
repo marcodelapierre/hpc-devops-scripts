@@ -13,6 +13,7 @@ Currently targeting the following use cases:
 - OpenStack VM platform
 - OpenNebula VM platform
 
-Most deployments make use of Vagrant in conjuction with Libvirt. Useful Vagrant plugins include: vagrant-libvirt, vagrant-reload, vagrant-share, vagrant-disksize.  
+Most deployments make use of Vagrant in conjuction with Libvirt.  
+Useful Vagrant plugins include: vagrant-libvirt, vagrant-reload, vagrant-share, vagrant-disksize.  
 Some deployments make use of Multipass, LXD or Docker.
 
