@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    echo "vagrant:#{$pass}" | chpasswd
+  SCRIPT
+
+  config.vm.define "node" do |mach|
+    mach.vm.box = "rockylinux/9"
+    mach.vm.box_version = "6.0.0"
+    mach.vm.box_check_update = false
+    mach.vm.synced_folder ".", "/vagrant", disabled: true
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 1024
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+    mach.vm.provision "shell", inline: $common_script
+  end
+
+end
