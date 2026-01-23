@@ -123,15 +123,15 @@ ssh:
   WW_CONFIG
 
 
-  config.vm.define :ww do |head|
-    head.vm.box = "rockylinux/9"
-    head.vm.box_version = "6.0.0"
-    head.vm.box_check_update = false
-    head.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.define :ww do |mach|
+    mach.vm.box = "rockylinux/9"
+    mach.vm.box_version = "6.0.0"
+    mach.vm.box_check_update = false
+    mach.vm.synced_folder ".", "/vagrant", disabled: true
 
-    head.vm.hostname = "warewulf"
+    mach.vm.hostname = "warewulf"
 
-    head.vm.network "private_network",
+    mach.vm.network "private_network",
       ip: "#{$ip_addr_base}.0.254",
       libvirt__netmask: "#{$net_mask}",
       libvirt__forward_mode: "nat",
@@ -139,20 +139,20 @@ ssh:
       libvirt__dhcp_enabled: false,
       autostart: true
 
-    head.vm.provider :libvirt do |libvirt|
+    mach.vm.provider :libvirt do |libvirt|
       libvirt.memory = 4096
       libvirt.cpus = 2
       libvirt.machine_virtual_size = 40
     end
 
-    head.vm.provision "shell", inline: $ww_setup_script
-    head.vm.provision "reload"
-    head.vm.provision "shell", inline: <<-SHELL
+    mach.vm.provision "shell", inline: $ww_setup_script
+    mach.vm.provision "reload"
+    mach.vm.provision "shell", inline: <<-SHELL
       cat << 'CONF' | tee /etc/warewulf/warewulf.conf
 #{$ww_config_file}
 CONF
     SHELL
-    head.vm.provision "shell", inline: $ww_config_script
+    mach.vm.provision "shell", inline: $ww_config_script
   end
 
 
