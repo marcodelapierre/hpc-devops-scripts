@@ -13,7 +13,8 @@ Currently targeting the following use cases:
 - OpenStack VM platform
 - OpenNebula VM platform
 
-Most deployments make use of Vagrant in conjuction with Libvirt.  
-Useful Vagrant plugins include: vagrant-libvirt, vagrant-reload, vagrant-share, vagrant-disksize.  
-Some deployments make use of Multipass, LXD or Docker.
+Most deployments make use of **Vagrant** in conjuction with **Libvirt**.  
+Useful Vagrant plugins include: `vagrant-libvirt`, `vagrant-reload`, `vagrant-share`, `vagrant-disksize`.  
+Some deployments make use of *Multipass*, *LXD* or *Docker*.
 
+Note: at present code in this repo assumes an X86 computer architecture (`amd64`/`x86_64`). If needed it should be straightforward to extend support to ARM architectures (`arm64`/`aarch64`).
