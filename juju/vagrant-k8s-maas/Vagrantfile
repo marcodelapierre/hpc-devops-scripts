@@ -1,0 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init-microk8s.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-microk8s.sh
+    mv /home/vagrant/init-maas.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-maas.sh
+
+    /root/init-microk8s.sh
+    /root/init-maas.sh
+  SCRIPT
+
+  $ip_maas = "10.10.10.1"
+
+  $juju_k8s_maas_script = <<-SCRIPT
+    sudo -u vagrant mkdir -p /home/vagrant/.local/share
+
+    snap install juju 
+
+    sudo -u vagrant juju clouds --client
+    sudo -u vagrant juju bootstrap microk8s juju-controller-microk8s
+
+    maas apikey --username admin >/tmp/apikey
+    sudo -u vagrant sed -i "s;APIKEY;$(cat /tmp/apikey);g" /home/vagrant/credential.yaml
+    rm /tmp/apikey
+    sudo -u vagrant sed -i "s;IP_MAAS;#{$ip_maas};g" /home/vagrant/cloud.yaml
+
+    sudo -u vagrant juju add-cloud --client maas /home/vagrant/cloud.yaml
+    sudo -u vagrant juju add-credential --client maas -f /home/vagrant/credential.yaml
+    sudo -u vagrant juju clouds --client
+
+    # Run manually after Maas has downloaded the OS image
+    #sudo -u vagrant juju bootstrap --config bootstrap-timeout=3600 --bootstrap-base ubuntu@22.04 maas juju-controller-maas
+  SCRIPT
+
+  config.vm.define "juju" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.provider "libvirt" do |libvirt|
+      # Note: I think a larger VM is needed for this deployment
+      libvirt.memory = 8192
+      libvirt.cpus = 4
+      libvirt.machine_virtual_size = 60
+    end
+    mach.vm.network "forwarded_port", guest: 5240, host: 5240
+    mach.vm.provision "file", source: "init-microk8s.sh", destination: "/home/vagrant/init-microk8s.sh"
+    mach.vm.provision "file", source: "lxd.cfg", destination: "/tmp/lxd.cfg"
+    mach.vm.provision "file", source: "init-maas.sh", destination: "/home/vagrant/init-maas.sh"
+    mach.vm.provision "file", source: "cloud.yaml", destination: "/home/vagrant/cloud.yaml"
+    mach.vm.provision "file", source: "credential.yaml", destination: "/home/vagrant/credential.yaml"
+    mach.vm.provision "shell", inline: $common_script
+    mach.vm.provision "shell", inline: $juju_k8s_maas_script
+  end
+
+end
