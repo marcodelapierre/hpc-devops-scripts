@@ -30,7 +30,6 @@ chown -R $vmuser:$vmuser /home/$vmuser/.kube
 chmod 700 /home/$vmuser/.kube
 
 mkdir -p /root/.kube
-chown -R root:root /root/.kube
 chmod 700 /root/.kube
 
 k8s config >/root/.kube/config

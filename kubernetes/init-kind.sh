@@ -53,6 +53,9 @@ mkdir -p /home/$vmuser/.kube
 chown -R $vmuser:$vmuser /home/$vmuser/.kube
 chmod 700 /home/$vmuser/.kube
 
+mkdir -p /root/.kube
+chmod 700 /root/.kube
+
 kind get kubeconfig >/root/.kube/config
 kind get kubeconfig >/home/$vmuser/.kube/config
 chown $vmuser:$vmuser /home/$vmuser/.kube/config
