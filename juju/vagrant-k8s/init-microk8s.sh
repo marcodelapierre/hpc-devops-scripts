@@ -1,1 +1,1 @@
-../../kubernetes/init-microk8s.sh
+../init-microk8s.sh

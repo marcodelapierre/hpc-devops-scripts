@@ -1,0 +1,37 @@
+#!/bin/bash
+# script to be run with sudo
+# tested with ubuntu24.04
+
+vmuser="ubuntu"
+
+# Install microk8s - JUJU requires Strict k8s, not classic
+snap install microk8s --channel=1.35-strict
+microk8s status --wait-ready
+#microk8s stop
+#microk8s start
+
+for plugin in dns dashboard hostpath-storage ingress ; do
+    microk8s enable $plugin
+done
+
+# Install kubectl
+#alias kubectl='microk8s kubectl'
+#kubectl_ver="$(curl -L -s https://dl.k8s.io/release/stable.txt)"
+kubectl_ver="v1.35.0"
+curl -L "https://dl.k8s.io/release/${kubectl_ver}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+chmod +x /usr/local/bin/kubectl
+
+# Configure $vmuser access to k8s
+adduser $vmuser snap_microk8s
+#newgrp snap_microk8s
+
+mkdir -p /home/$vmuser/.kube
+chown -R $vmuser:$vmuser /home/$vmuser/.kube
+chmod 700 /home/$vmuser/.kube
+
+mkdir -p /root/.kube
+chmod 700 /root/.kube
+
+microk8s config >/root/.kube/config
+microk8s config >/home/$vmuser/.kube/config
+chown $vmuser:$vmuser /home/$vmuser/.kube/config
