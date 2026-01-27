@@ -9,15 +9,17 @@ Vagrant.configure("2") do |config|
     chsh -s /bin/bash vagrant
     echo "vagrant:#{$pass}" | chpasswd
 
-    mv /home/vagrant/init.sh /root/
-    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init.sh
+    mv /home/vagrant/init-maas.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-maas.sh
 
-    /root/init.sh
+    /root/init-maas.sh
   SCRIPT
 
   $ip_maas = "10.10.10.1"
 
   $juju_maas_script = <<-SCRIPT
+    sudo -u vagrant mkdir -p /home/vagrant/.local/share
+
     snap install juju 
 
     maas apikey --username admin >/tmp/apikey
@@ -46,7 +48,7 @@ Vagrant.configure("2") do |config|
     end
     mach.vm.network "forwarded_port", guest: 5240, host: 5240
     mach.vm.provision "file", source: "lxd.cfg", destination: "/tmp/lxd.cfg"
-    mach.vm.provision "file", source: "init.sh", destination: "/home/vagrant/init.sh"
+    mach.vm.provision "file", source: "init-maas.sh", destination: "/home/vagrant/init-maas.sh"
     mach.vm.provision "file", source: "cloud.yaml", destination: "/home/vagrant/cloud.yaml"
     mach.vm.provision "file", source: "credential.yaml", destination: "/home/vagrant/credential.yaml"
     mach.vm.provision "shell", inline: $common_script

@@ -8,6 +8,8 @@ multipass transfer init-microk8s.sh $mach:/home/ubuntu/
 multipass exec $mach -- sudo mv /home/ubuntu/init-microk8s.sh /root/
 
 multipass exec $mach -- sudo /root/init-microk8s.sh
+multipass exec $mach -- mkdir -p /home/ubuntu/.local/share
+
 multipass exec $mach -- sudo snap install juju
 multipass exec $mach -- juju clouds --client
 multipass exec $mach -- juju bootstrap microk8s juju-controller
