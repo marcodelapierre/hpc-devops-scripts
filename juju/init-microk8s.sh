@@ -6,6 +6,8 @@ vmuser="ubuntu"
 
 # Install microk8s - JUJU requires Strict k8s, not classic
 snap install microk8s --channel=1.35-strict
+# On AWS, need classic to make it work
+#snap install microk8s --channel 1.35 --classic
 microk8s status --wait-ready
 #microk8s stop
 #microk8s start
@@ -24,6 +26,10 @@ chmod +x /usr/local/bin/kubectl
 # Configure $vmuser access to k8s
 adduser $vmuser snap_microk8s
 #newgrp snap_microk8s
+# AWS case
+#adduser $vmuser microk8s
+##newgrp microk8s
+
 
 mkdir -p /home/$vmuser/.kube
 chown -R $vmuser:$vmuser /home/$vmuser/.kube

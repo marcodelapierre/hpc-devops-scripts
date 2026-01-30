@@ -21,6 +21,9 @@ Vagrant.configure("2") do |config|
     snap install juju
     sudo -u vagrant juju clouds --client
     sudo -u vagrant juju bootstrap microk8s juju-controller-microk8s
+    # On AWS, need classic microk8s, and hence these modified steps
+    #sudo -u vagrant juju add-k8s --client mymicrok8s
+    #sudo -u vagrant juju bootstrap mymicrok8s juju-controller-microk8s
   SCRIPT
 
   config.vm.define "juju" do |mach|
