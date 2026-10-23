@@ -28,7 +28,7 @@ cd slurm-bridge
 git checkout v1.2.3
 
 sleep 5
-
+# somehow this fails when run within Vagrant, but goes ahead when run manually
 hack/kind.sh --core
 
 # Example of job submission
