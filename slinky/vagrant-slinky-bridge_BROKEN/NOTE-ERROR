@@ -1,0 +1,10 @@
+There is currently an error happening during hack/kind.sh initialisation of the Kind cluster, where worker nodes cannot be created according to the specifications provided in hack/kind.yaml. 
+
+A communication error is displayed, where it seems that the kubelet in the worker node fails to get ready.
+
+Versions tested with error: 1.1.4, 1.2 through 1.2.3
+Environment: Vagrant VM with Ubuntu 24.04 and Kind 0.32
+
+This is awaiting fix by the developers.
+
+Also note: I tested a deployment with existing Kind cluster (no worker nodes); the remaining setup all worked, but no Slurm can be submitted because there are no worker nodes.
