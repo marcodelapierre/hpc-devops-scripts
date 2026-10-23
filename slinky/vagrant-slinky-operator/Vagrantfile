@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $common_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    mv /home/vagrant/init-kind.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-kind.sh
+    mv /home/vagrant/init-slinky-operator.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-slinky-operator.sh
+    mv /home/vagrant/post-kind.sh /root/
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/post-kind.sh
+
+    /root/init-kind.sh
+    sudo -u vagrant /root/init-slinky-operator.sh
+    /root/post-kind.sh
+  SCRIPT
+
+  config.vm.define "slinky" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+    #mach.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, disabled: false
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 4096
+      libvirt.cpus = 4
+      libvirt.machine_virtual_size = 20
+    end
+
+    mach.vm.provision "file", source: "init-kind.sh", destination: "/home/vagrant/init-kind.sh"
+    mach.vm.provision "file", source: "init-slinky-operator.sh", destination: "/home/vagrant/init-slinky-operator.sh"
+    mach.vm.provision "file", source: "post-kind.sh", destination: "/home/vagrant/post-kind.sh"
+    mach.vm.provision "shell", inline: $common_script
+  end
+
+end

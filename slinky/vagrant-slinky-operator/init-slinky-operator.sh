@@ -1,0 +1,1 @@
+../init-slinky-operator.sh
