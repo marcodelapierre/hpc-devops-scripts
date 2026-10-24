@@ -1,0 +1,16 @@
+Error during deploy:
+
+"Pulled: quay.io/jetstack/charts/cert-manager:1.21.3
+Digest: sha256:e482675aec32862d323a9218293ff7de81192337998615e4378c56498473f240
+Error: INSTALLATION FAILED: failed post-install: resource Job/cert-manager/cert-manager-startupapicheck not ready. status: InProgress, message: Job in progress
+context deadline exceeded
+"
+
+If I try again:
+
+"level=WARN msg="upgrade failed" name=slurm-operator error="failed to create resource: Internal error occurred: failed calling webhook \"webhook.cert-manager.io\": failed to call webhook: Post \"https://cert-manager-webhook.cert-manager.svc:443/validate?timeout=30s\": dial tcp 10.96.19.54:443: connect: connection refused"
+Error: UPGRADE FAILED: failed to create resource: Internal error occurred: failed calling webhook "webhook.cert-manager.io": failed to call webhook: Post "https://cert-manager-webhook.cert-manager.svc:443/validate?timeout=30s": dial tcp 10.96.19.54:443: connect: connection refused
+deploying "slurm-operator": install: exit status 1
+"
+
+Issue with the certificate manager pod..
