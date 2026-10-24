@@ -11,13 +11,12 @@ Vagrant.configure("2") do |config|
 
     mv /home/vagrant/init-kind.sh /root/
     sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-kind.sh
-    mv /home/vagrant/init-slinky-bridge.sh /root/
-    sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/init-slinky-bridge.sh
+    sed -i 's;vmuser=.*;vmuser="vagrant";g' /home/vagrant/init-slinky-bridge.sh
     mv /home/vagrant/post-kind.sh /root/
     sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/post-kind.sh
 
     /root/init-kind.sh
-    sudo -u vagrant /root/init-slinky-bridge.sh
+    sudo -u vagrant /home/vagrant/init-slinky-bridge.sh
     /root/post-kind.sh
   SCRIPT
 

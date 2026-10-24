@@ -1,5 +1,5 @@
 #!/bin/bash
-# script to be run with sudo
+# script to be run with normal user
 # tested with ubuntu24.04
 
 vmuser="ubuntu"
@@ -10,8 +10,7 @@ git clone https://github.com/SlinkyProject/slurm-operator
 cd slurm-operator
 git checkout v1.2.3
 
-sleep 5
-# somehow this fails when run within Vagrant, but goes ahead when run manually
+export PATH=$PATH:/usr/local/go/bin
 hack/kind.sh --core
 
 # Example of job submission
