@@ -36,12 +36,12 @@ adduser $vmuser docker
 
 # Install kind
 # For AMD64 / x86_64
-curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.32.0/kind-linux-amd64
+curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
 chmod +x /usr/local/bin/kind
 
 # Install kubectl
 #kubectl_ver="$(curl -L -s https://dl.k8s.io/release/stable.txt)"
-kubectl_ver="v1.36.1"
+kubectl_ver="v1.37.0"
 curl -L "https://dl.k8s.io/release/${kubectl_ver}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
 chmod +x /usr/local/bin/kubectl
 

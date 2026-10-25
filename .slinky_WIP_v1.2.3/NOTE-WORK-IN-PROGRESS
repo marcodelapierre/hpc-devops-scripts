@@ -1,0 +1,6 @@
+I attempted the deployments on my laptop bare-metal, both Operator and Bridge, and still got errors. 
+I will try again with future versions higher than 1.2.3, when available. 
+
+I have opened 2 GitHub issues to seek help from the developers:
+- Slurm Operator: https://github.com/SlinkyProject/slurm-operator/issues/276
+- Slurm Bridge: https://github.com/SlinkyProject/slurm-bridge/issues/54
