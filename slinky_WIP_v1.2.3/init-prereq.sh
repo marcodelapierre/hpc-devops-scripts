@@ -71,3 +71,13 @@ rm -r helm-v${HELM_VERSION}-linux-amd64.tar.gz linux-amd64/
 # yq
 curl -Lo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64
 chmod +x /usr/local/bin/yq
+# GCloud CLI
+apt update
+apt install -y ca-certificates gnupg curl
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+apt update
+apt install -y google-cloud-cli
+# alternative, to save time and disk space
+#CLOUDSDK_SKIP_PY_COMPILATION=1 apt install -y google-cloud-cli
+
