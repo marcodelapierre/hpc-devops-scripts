@@ -4,3 +4,22 @@ I will try again with future versions higher than 1.2.3, when available.
 I have opened 2 GitHub issues to seek help from the developers:
 - Slurm Operator: https://github.com/SlinkyProject/slurm-operator/issues/276
 - Slurm Bridge: https://github.com/SlinkyProject/slurm-bridge/issues/54
+
+
+1. Operator - Fix on baremetal Ubuntu (Snap Docker):
+
+mkdir -p "$HOME/kind-tmp"
+TMPDIR="$HOME/kind-tmp" ./hack/kind.sh --core
+
+Ok, but no Slurm nodes/partitions
+
+2. Operator - Vagrant - Error: 
+
+"slinky: Failed to connect to bus: No medium found"
+
+3. Bridge - Fix on baremetal
+
+OK!
+
+4. Bridge - Vagrant - TO BE TESTED
+

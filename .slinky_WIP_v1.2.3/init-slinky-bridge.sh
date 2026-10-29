@@ -11,7 +11,9 @@ cd slurm-bridge
 git checkout v1.2.3
 
 export PATH=$PATH:/usr/local/go/bin
-hack/kind.sh --core
+
+mkdir -p "$HOME/kind-tmp"
+TMPDIR="$HOME/kind-tmp" hack/kind.sh --core
 
 # Example of job submission
 #kubectl apply -f hack/examples/job/single.yaml
