@@ -16,6 +16,8 @@ Ok, but no Slurm nodes/partitions
 2. Operator - Vagrant - Error: 
 
 "slinky: Failed to connect to bus: No medium found"
+NOTE: might be related to the use of `sudo` to run as Vagrant
+TRY: https://stackoverflow.com/questions/22547575/execute-commands-as-user-after-vagrant-provisioning#22556979
 
 3. Bridge - Fix on baremetal
 
