@@ -13,7 +13,7 @@ git checkout v1.2.4
 SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
 sed -i "/^nodesets: *{}/{
     s;^nodesets: *{};;
-    r $SCRIPT_DIR/nodesets.yaml
+    r $SCRIPT_DIR/nodesets-operator.yaml
 }" helm/slurm/values.yaml
 sed -i 's;values-dev.yaml;values.yaml;g' helm/slurm/skaffold.yaml
 
