@@ -8,7 +8,7 @@ vmuser="ubuntu"
 cd $HOME
 git clone https://github.com/SlinkyProject/slurm-bridge
 cd slurm-bridge
-git checkout v1.2.3
+git checkout v1.2.4
 
 export PATH=$PATH:/usr/local/go/bin
 

@@ -8,7 +8,7 @@ vmuser="ubuntu"
 cd $HOME
 git clone https://github.com/SlinkyProject/slurm-operator
 cd slurm-operator
-git checkout v1.2.3
+git checkout v1.2.4
 
 SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
 sed -i "/^nodesets: *{}/{
