@@ -34,6 +34,7 @@ Vagrant.configure("2") do |config|
 
     mach.vm.provision "file", source: "init-prereq.sh", destination: "/home/vagrant/init-prereq.sh"
     mach.vm.provision "file", source: "init-slinky-operator.sh", destination: "/home/vagrant/init-slinky-operator.sh"
+    mach.vm.provision "file", source: "nodesets.yaml", destination: "/home/vagrant/nodesets.yaml"
     mach.vm.provision "file", source: "post-prereq.sh", destination: "/home/vagrant/post-prereq.sh"
     mach.vm.provision "shell", inline: $common_script
   end

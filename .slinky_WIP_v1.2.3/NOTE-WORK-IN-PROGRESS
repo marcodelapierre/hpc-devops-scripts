@@ -11,7 +11,9 @@ I have opened 2 GitHub issues to seek help from the developers:
 mkdir -p "$HOME/kind-tmp"
 TMPDIR="$HOME/kind-tmp" ./hack/kind.sh --core
 
-Ok, but no Slurm nodes/partitions
+2nd fix: updating helm/slurm/values.yaml
+
+OK
 
 2. Operator - Vagrant - Error: 
 
