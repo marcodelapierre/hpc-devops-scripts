@@ -11,6 +11,7 @@ cd slurm-operator
 git checkout v1.2.4
 
 SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
+# this edited yaml is taken from Slinky Operator v1.1.5
 sed -i "/^nodesets: *{}/{
     s;^nodesets: *{};;
     r $SCRIPT_DIR/nodesets-operator.yaml
