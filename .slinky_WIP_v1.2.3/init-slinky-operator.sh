@@ -21,7 +21,10 @@ sed -i 's;values-dev.yaml;values.yaml;g' helm/slurm/skaffold.yaml
 export PATH=$PATH:/usr/local/go/bin
 
 mkdir -p "$HOME/kind-tmp"
-TMPDIR="$HOME/kind-tmp" hack/kind.sh --core
+# first time it installs Go deps and then Docker command fails
+TMPDIR="$HOME/kind-tmp" hack/kind.sh --core || true
+# run a second time
+#TMPDIR="$HOME/kind-tmp" hack/kind.sh --core
 
 # Example of job submission
 #

@@ -16,7 +16,19 @@ Vagrant.configure("2") do |config|
     sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/post-prereq.sh
 
     /root/init-prereq.sh
-    sudo -u vagrant /home/vagrant/init-slinky-operator.sh
+  SCRIPT
+
+  $op_script = <<-SCRIPT
+    /home/vagrant/init-slinky-operator.sh
+  SCRIPT
+
+  $op_bis_script = <<-SCRIPT
+    # run a second time
+    cd $HOME/slurm-operator
+    TMPDIR="$HOME/kind-tmp" hack/kind.sh --core
+  SCRIPT
+
+  $post_script = <<-SCRIPT
     /root/post-prereq.sh
   SCRIPT
 
@@ -27,16 +39,19 @@ Vagrant.configure("2") do |config|
     #mach.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, disabled: false
 
     mach.vm.provider "libvirt" do |libvirt|
-      libvirt.memory = 4096
+      libvirt.memory = 8192
       libvirt.cpus = 4
       libvirt.machine_virtual_size = 40
     end
 
-    mach.vm.provision "file", source: "init-prereq.sh", destination: "/home/vagrant/init-prereq.sh"
-    mach.vm.provision "file", source: "init-slinky-operator.sh", destination: "/home/vagrant/init-slinky-operator.sh"
-    mach.vm.provision "file", source: "nodesets-operator.yaml", destination: "/home/vagrant/nodesets-operator.yaml"
-    mach.vm.provision "file", source: "post-prereq.sh", destination: "/home/vagrant/post-prereq.sh"
-    mach.vm.provision "shell", inline: $common_script
+#    mach.vm.provision "file", source: "init-prereq.sh", destination: "/home/vagrant/init-prereq.sh"
+#    mach.vm.provision "file", source: "init-slinky-operator.sh", destination: "/home/vagrant/init-slinky-operator.sh"
+#    mach.vm.provision "file", source: "nodesets-operator.yaml", destination: "/home/vagrant/nodesets-operator.yaml"
+#    mach.vm.provision "file", source: "post-prereq.sh", destination: "/home/vagrant/post-prereq.sh"
+#    mach.vm.provision "shell", inline: $common_script
+#    mach.vm.provision "shell", privileged: false, inline: $op_script
+    mach.vm.provision "shell", privileged: false, inline: $op_bis_script
+    mach.vm.provision "shell", inline: $post_script
   end
 
 end

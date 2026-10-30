@@ -21,6 +21,44 @@ OK
 NOTE: might be related to the use of `sudo` to run as Vagrant
 TRY: https://stackoverflow.com/questions/22547575/execute-commands-as-user-after-vagrant-provisioning#22556979
 
+NOW:
+
+Pulled: quay.io/jetstack/charts/cert-manager:1.21.3
+Digest: sha256:e482675aec32862d323a9218293ff7de81192337998615e4378c56498473f240
+Error: INSTALLATION FAILED: failed post-install: resource Job/cert-manager/cert-manager-startupapicheck not ready. status: InProgress, message: Job in progress
+context deadline exceeded
+
+Note this is erratic -> trying to increase RAM
+
+NOTE: on first execution hack/kind.sh (2nd vagrant up required):
+
+    slinky: ERROR: failed to list clusters: command "docker ps -a --filter label=io.x-k8s.kind.cluster --format '{{.Label "io.x-k8s.kind.cluster"}}'" failed with error: exit status 1
+    slinky: 
+    slinky: Command Output: permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+
+TO BE TESTED - I am wondering whether I could fix with `sudo systemctl restart docker`
+
+ALSO TO TEST :
+    slinky: Recommended to increase 'kernel.keys.maxkeys':
+    slinky:   $ sudo sysctl -w kernel.keys.maxkeys=2000
+    slinky:   $ echo 'kernel.keys.maxkeys=2000' | sudo tee --append /etc/sysctl.d/kernel.conf
+    slinky: Recommended to increase 'fs.inotify.max_user_instances':
+    slinky:   $ sudo sysctl -w fs.inotify.max_user_instances=65535
+    slinky:   $ echo 'fs.inotify.max_user_instances=65535' | sudo tee --append /etc/sysctl.d/fs.conf
+    slinky: Recommended to increase 'fs.inotify.max_user_watches':
+    slinky:   $ sudo sysctl -w fs.inotify.max_user_watches=1048576
+    slinky:   $ echo 'fs.inotify.max_user_watches=1048576' | sudo tee --append /etc/sysctl.d/fs.conf
+
+
+BAD:
+
+    slinky:     - slinky:pod/slurm-operator-7f68b5d759-q7lf7: container slurm-operator is backing off waiting to restart
+    slinky:  - slinky:deployment/slurm-operator failed. Error: container slurm-operator is backing off waiting to restart.
+    slinky: 1/2 deployment(s) failed
+
+
+
+
 3. Bridge - Fix on baremetal
 
 OK!
