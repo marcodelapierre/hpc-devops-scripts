@@ -30,4 +30,4 @@ TMPDIR="$HOME/kind-tmp" hack/kind.sh --core || true
 #
 #kubectl exec -it -n slinky slurm-controller-0 -- bash
 #sbatch --wrap 'echo Ciao' -p slinky # wait a few minutes for node deploy
-#kubectl exec -it -n slinky slurm-worker-slinky-0 -- cat ~/slurm-1.out 
+#kubectl exec -it -n slinky slurm-worker-slinky-0 -- cat /tmp/slurm-1.out 
