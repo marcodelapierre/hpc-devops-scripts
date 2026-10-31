@@ -2,8 +2,12 @@ I attempted the deployments on my laptop bare-metal, both Operator and Bridge, a
 I will try again with future versions higher than 1.2.3, when available. 
 
 I have opened 2 GitHub issues to seek help from the developers:
-- Slurm Operator: https://github.com/SlinkyProject/slurm-operator/issues/276
-- Slurm Bridge: https://github.com/SlinkyProject/slurm-bridge/issues/54
+- [resolved] Slurm Operator: https://github.com/SlinkyProject/slurm-operator/issues/276
+- [resolved] Slurm Bridge: https://github.com/SlinkyProject/slurm-bridge/issues/54
+
+[Update]  
+- I can now install Slinky Operator and Bridge in baremetal and Vagrant. 
+- There is a Docker permission denied issue in Vagrant on first up. I have opened a GitHub issue: https://github.com/hashicorp/vagrant/issues/13855 
 
 
 1. Operator - Fix on baremetal Ubuntu (Snap Docker):
