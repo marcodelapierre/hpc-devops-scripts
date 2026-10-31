@@ -81,3 +81,10 @@ apt install -y google-cloud-cli
 # alternative, to save time and disk space
 #CLOUDSDK_SKIP_PY_COMPILATION=1 apt install -y google-cloud-cli
 
+# Change limits as recommended
+sysctl -w kernel.keys.maxkeys=2000
+echo 'kernel.keys.maxkeys=2000' | tee --append /etc/sysctl.d/kernel.conf
+sysctl -w fs.inotify.max_user_instances=65535
+echo 'fs.inotify.max_user_instances=65535' | tee --append /etc/sysctl.d/fs.conf
+sysctl -w fs.inotify.max_user_watches=1048576
+echo 'fs.inotify.max_user_watches=1048576' | tee --append /etc/sysctl.d/fs.conf

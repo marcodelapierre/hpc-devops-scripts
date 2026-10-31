@@ -36,9 +36,9 @@ NOTE: on first execution hack/kind.sh (2nd vagrant up required):
     slinky: 
     slinky: Command Output: permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
 
-TO BE TESTED - I am wondering whether I could fix with `sudo systemctl restart docker`
+See this old Vagrant github issue: https://github.com/hashicorp/vagrant/pull/10399
 
-ALSO TO TEST :
+TO ADD :
     slinky: Recommended to increase 'kernel.keys.maxkeys':
     slinky:   $ sudo sysctl -w kernel.keys.maxkeys=2000
     slinky:   $ echo 'kernel.keys.maxkeys=2000' | sudo tee --append /etc/sysctl.d/kernel.conf
