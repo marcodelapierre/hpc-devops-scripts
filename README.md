@@ -10,6 +10,7 @@ Currently targeting the following use cases:
 - Juju application orchestrator
 - Warewulf cluster manager
 - Kubernetes orchestrator
+- Slinky hybrid Kubernetes-Slurm platform
 - OpenStack VM platform
 - OpenNebula VM platform
 

@@ -67,3 +67,5 @@ OK!
 
 4. Bridge - Vagrant - TO BE TESTED
 
+Failing with context error, both Vagrant and baremetal - baremetal was working before, seems erratic..
+
