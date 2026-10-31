@@ -56,7 +56,9 @@ BAD:
     slinky:  - slinky:deployment/slurm-operator failed. Error: container slurm-operator is backing off waiting to restart.
     slinky: 1/2 deployment(s) failed
 
-
+OK
+- NOW WORKING WITH EXTRA SYSCTL SETTINGS ABOVE
+- CAVEAT: NEED TO RE-RUN MANUALLY LAST CMD
 
 
 3. Bridge - Fix on baremetal

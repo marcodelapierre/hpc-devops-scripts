@@ -16,7 +16,13 @@ Vagrant.configure("2") do |config|
     sed -i 's;vmuser=.*;vmuser="vagrant";g' /root/post-prereq.sh
 
     /root/init-prereq.sh
-    sudo -u vagrant /home/vagrant/init-slinky-bridge.sh
+  SCRIPT
+
+  $op_script = <<-SCRIPT
+    /home/vagrant/init-slinky-bridge.sh
+  SCRIPT
+
+  $post_script = <<-SCRIPT
     /root/post-prereq.sh
   SCRIPT
 
@@ -27,7 +33,7 @@ Vagrant.configure("2") do |config|
     #mach.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false, disabled: false
 
     mach.vm.provider "libvirt" do |libvirt|
-      libvirt.memory = 4096
+      libvirt.memory = 8192
       libvirt.cpus = 4
       libvirt.machine_virtual_size = 40
     end
@@ -36,6 +42,8 @@ Vagrant.configure("2") do |config|
     mach.vm.provision "file", source: "init-slinky-bridge.sh", destination: "/home/vagrant/init-slinky-bridge.sh"
     mach.vm.provision "file", source: "post-prereq.sh", destination: "/home/vagrant/post-prereq.sh"
     mach.vm.provision "shell", inline: $common_script
+    mach.vm.provision "shell", privileged: false, inline: $op_script
+    mach.vm.provision "shell", inline: $post_script
   end
 
 end
