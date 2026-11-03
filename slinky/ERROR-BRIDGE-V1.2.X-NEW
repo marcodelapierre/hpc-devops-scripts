@@ -1,0 +1,22 @@
+#12 [builder 4/6] RUN go mod download
+#12 66.26 go: k8s.io/apiextensions-apiserver@v0.36.2: read "https://proxy.golang.org/k8s.io/apiextensions-apiserver/@v/v0.36.2.mod": stream error: stream ID 219; INTERNAL_ERROR; received from peer
+#12 ERROR: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+------
+ > [builder 4/6] RUN go mod download:
+66.26 go: k8s.io/apiextensions-apiserver@v0.36.2: read "https://proxy.golang.org/k8s.io/apiextensions-apiserver/@v/v0.36.2.mod": stream error: stream ID 219; INTERNAL_ERROR; received from peer
+------
+Dockerfile:18
+--------------------
+  16 |     # cache deps before building and copying source so that we don't need to re-download as much
+  17 |     # and so that source changes don't invalidate our downloaded layer
+  18 | >>> RUN go mod download
+  19 |     
+  20 |     # Copy the go source
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+Building [slinky.slurm.net/slurm-operator]...
+Target platforms: [linux/amd64]
+Build [slinky.slurm.net/slurm-operator] was canceled
+build [slinky.slurm.net/slurm-operator-webhook] failed: exit status 1. Docker build ran into internal error. Please retry.
+If this keeps happening, please open an issue..
+

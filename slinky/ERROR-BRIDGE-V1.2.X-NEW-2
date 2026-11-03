@@ -1,0 +1,25 @@
+#10 [builder 4/6] RUN go mod download
+#10 63.80 go: github.com/SlinkyProject/slurm-client@v1.2.4: read "https://proxy.golang.org/github.com/%21slinky%21project/slurm-client/@v/v1.2.4.mod": stream error: stream ID 17; INTERNAL_ERROR; received from peer
+#10 ERROR: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+------
+ > [builder 4/6] RUN go mod download:
+63.80 go: github.com/SlinkyProject/slurm-client@v1.2.4: read "https://proxy.golang.org/github.com/%21slinky%21project/slurm-client/@v/v1.2.4.mod": stream error: stream ID 17; INTERNAL_ERROR; received from peer
+------
+Dockerfile:15
+--------------------
+  13 |     # cache deps before building and copying source so that we don't need to re-download as much
+  14 |     # and so that source changes don't invalidate our downloaded layer
+  15 | >>> RUN go mod download
+  16 |     
+  17 |     # Copy the go source
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+Building [slinky.slurm.net/slurm-bridge-admission]...
+Target platforms: [linux/amd64]
+Build [slinky.slurm.net/slurm-bridge-admission] was canceled
+Building [slinky.slurm.net/slurm-bridge-scheduler]...
+Target platforms: [linux/amd64]
+Build [slinky.slurm.net/slurm-bridge-scheduler] was canceled
+build [slinky.slurm.net/slurm-bridge-controllers] failed: exit status 1. Docker build ran into internal error. Please retry.
+If this keeps happening, please open an issue..
+
