@@ -1,11 +1,11 @@
 K8s node does not get ready:
 
-# stratum kubectl get nodes
+[root@localhost ~]# stratum kubectl get nodes
 NAME        STATUS     ROLES    AGE   VERSION
 localhost   NotReady   <none>   54s   v1.37.1-stratum
 
 
-As a result, the deployments are never ready for use:
+This is because the deployment is never ready for use:
 
 [root@localhost ~]# stratum kubectl get all -A
 NAMESPACE            NAME                                          READY   STATUS    RESTARTS        AGE
@@ -44,3 +44,14 @@ kube-system          replicaset.apps/coredns-649bdc466b                  2      
 local-path-storage   replicaset.apps/local-path-provisioner-844cc4854f   1         1         0       2m52s
 stratum-dashboard    replicaset.apps/stratum-dashboard-bd59495df         1         1         0       2m58s
 
+
+By reading the docs, looks like the Cilium containers are the blockers.
+
+I tried docker pull, and getting an error:
+
+```
+$ docker pull ghcr.io/ctrliq/stratum/operator-generic:v1.20.3@sha256:efdd8d89d6d8f63d21a065fa2f9e17614a2b3ac9371b221af9355f63829e2dbc
+Error response from daemon: Get "https://ghcr.io/v2/ctrliq/stratum/operator-generic/manifests/sha256:efdd8d89d6d8f63d21a065fa2f9e17614a2b3ac9371b221af9355f63829e2dbc": unauthorized
+```
+
+I created the GitHub issue https://github.com/ctrliq/stratum/issues/160
