@@ -1,0 +1,46 @@
+K8s node does not get ready:
+
+# stratum kubectl get nodes
+NAME        STATUS     ROLES    AGE   VERSION
+localhost   NotReady   <none>   54s   v1.37.1-stratum
+
+
+As a result, the deployments are never ready for use:
+
+[root@localhost ~]# stratum kubectl get all -A
+NAMESPACE            NAME                                          READY   STATUS    RESTARTS        AGE
+kube-system          pod/cilium-5mjsr                              0/1     Running   0               2m55s
+kube-system          pod/cilium-envoy-hm546                        1/1     Running   0               2m55s
+kube-system          pod/cilium-operator-84758fd44b-l6ncm          0/1     Pending   0               2m55s
+kube-system          pod/coredns-649bdc466b-482s9                  0/1     Pending   0               2m53s
+kube-system          pod/coredns-649bdc466b-v2dwv                  0/1     Pending   0               2m53s
+kube-system          pod/etcd-localhost                            1/1     Running   0               3m19s
+kube-system          pod/kube-apiserver-localhost                  1/1     Running   0               3m19s
+kube-system          pod/kube-controller-manager-localhost         1/1     Running   2 (3m18s ago)   3m19s
+kube-system          pod/kube-scheduler-localhost                  1/1     Running   0               3m19s
+local-path-storage   pod/local-path-provisioner-844cc4854f-nzlpz   0/1     Pending   0               2m52s
+stratum-dashboard    pod/stratum-dashboard-bd59495df-szmqj         0/1     Pending   0               2m57s
+
+NAMESPACE           NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default             service/kubernetes                 ClusterIP   10.96.0.1        <none>        443/TCP                  3m17s
+kube-system         service/cilium-envoy               ClusterIP   None             <none>        9964/TCP                 2m55s
+kube-system         service/kube-dns                   ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   2m53s
+kube-system         service/stratum-operator-webhook   ClusterIP   10.105.132.7     <none>        443/TCP                  3m17s
+stratum-dashboard   service/stratum-dashboard          NodePort    10.102.229.201   <none>        443:30443/TCP            3m17s
+
+NAMESPACE     NAME                          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/cilium         1         1         0       1            0           kubernetes.io/os=linux   2m55s
+kube-system   daemonset.apps/cilium-envoy   1         1         1       1            1           kubernetes.io/os=linux   2m55s
+
+NAMESPACE            NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system          deployment.apps/cilium-operator          0/1     1            0           2m55s
+kube-system          deployment.apps/coredns                  0/2     2            0           2m53s
+local-path-storage   deployment.apps/local-path-provisioner   0/1     1            0           2m52s
+stratum-dashboard    deployment.apps/stratum-dashboard        0/1     1            0           3m17s
+
+NAMESPACE            NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system          replicaset.apps/cilium-operator-84758fd44b          1         1         0       2m55s
+kube-system          replicaset.apps/coredns-649bdc466b                  2         2         0       2m53s
+local-path-storage   replicaset.apps/local-path-provisioner-844cc4854f   1         1         0       2m52s
+stratum-dashboard    replicaset.apps/stratum-dashboard-bd59495df         1         1         0       2m58s
+

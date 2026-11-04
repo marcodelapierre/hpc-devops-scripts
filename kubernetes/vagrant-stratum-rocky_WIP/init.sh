@@ -1,0 +1,1 @@
+../init-stratum-rocky.sh
