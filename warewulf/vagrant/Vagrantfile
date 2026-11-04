@@ -15,9 +15,10 @@ Vagrant.configure("2") do |config|
   $ww_setup_script = <<-WW_SETUP
     echo "vagrant:#{$pass}" | chpasswd
 
+    # resize partition and filesystem (RockyLinux)
     dnf install -y cloud-utils-growpart
     growpart /dev/vda 5
-    xfs_growfs /dev/vda5
+    xfs_growfs /
 
     dnf config-manager --set-enabled crb
     dnf groupinstall -y "Development Tools"
@@ -142,6 +143,7 @@ ssh:
     mach.vm.provider :libvirt do |libvirt|
       libvirt.memory = 4096
       libvirt.cpus = 2
+      # memo: RockyLinux box does not resize the filesystem, see commands above
       libvirt.machine_virtual_size = 40
     end
 
