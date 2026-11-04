@@ -21,10 +21,7 @@ sed -i 's;values-dev.yaml;values.yaml;g' helm/slurm/skaffold.yaml
 export PATH=$PATH:/usr/local/go/bin
 
 mkdir -p "$HOME/kind-tmp"
-# first time it installs Go deps and then Docker command fails
-# for now I have to re-run this manually
-# see this old Vagrant issue: https://github.com/hashicorp/vagrant/pull/10399
-TMPDIR="$HOME/kind-tmp" hack/kind.sh --core || true
+TMPDIR="$HOME/kind-tmp" hack/kind.sh --core
 
 # Example of job submission
 #
