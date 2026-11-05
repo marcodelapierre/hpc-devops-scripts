@@ -15,6 +15,7 @@ Currently targeting the following use cases:
 - Slinky hybrid Kubernetes-Slurm platform
 - OpenStack VM platform
 - OpenNebula VM platform
+- NFS filesystem
 
 Most deployments make use of **Vagrant** in conjuction with **Libvirt**.  
 Useful Vagrant plugins include: `vagrant-libvirt`, `vagrant-reload`, `vagrant-share`, `vagrant-disksize`.  

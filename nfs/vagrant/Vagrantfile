@@ -1,0 +1,88 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $ip_base = "192.168.56"
+  $ip_server = 10
+  $ip_client = 11
+
+
+  $server_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    apt update
+    apt install -y nfs-kernel-server
+
+    mkdir -p /shared_server
+    # add this if you want root on the client to be able to r/w to the share
+    chown nobody:nogroup /shared_server
+
+    mkdir -p /shared_server/vagrant
+    chown vagrant:vagrant /shared_server/vagrant
+
+    cat >> /etc/exports <<EOF
+/shared_server    #{$ip_base}.#{$ip_client}(rw,sync,root_squash,no_subtree_check)
+EOF
+
+    systemctl restart nfs-kernel-server
+  SCRIPT
+
+
+  $client_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+    apt update
+    apt install -y nfs-common
+
+    mkdir -p /shared
+
+    cat >> /etc/fstab <<EOF
+#{$ip_base}.#{$ip_server}:/shared_server /shared nfs4 defaults 0 0
+EOF
+
+    systemctl daemon-reload
+    mount -a
+  SCRIPT
+
+
+  config.vm.define "nfs-server" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "nfs-server"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_server}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 2048
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "shell", inline: $server_script
+  end
+
+
+  config.vm.define "nfs-client" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "nfs-client"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_client}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 2048
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "shell", inline: $client_script
+  end
+
+end
