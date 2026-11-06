@@ -1,0 +1,126 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $pass = ENV["pass"] || "vagrant"
+
+  $ip_base = "192.168.56"
+  $ip_mgmt = 11
+  $ip_meta = 12
+  $ip_stor = 13
+  $ip_cli = 21
+
+  # TODO: install ntp for clock sync on all servers (or date, or ntpdate)
+
+  $mgmt_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+  SCRIPT
+
+
+  $meta_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+  SCRIPT
+
+
+  $stor_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+  SCRIPT
+
+
+  $cli_script = <<-SCRIPT
+    chsh -s /bin/bash vagrant
+    echo "vagrant:#{$pass}" | chpasswd
+
+  SCRIPT
+
+
+  config.vm.define "bee-mgmt" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "bee-mgmt"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_mgmt}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 1536
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "file", source: "beegfs-mgmtd_8.4.1_amd64.deb", destination: "/root/beegfs-mgmtd_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "libbeegfs-license-8.4.1-linux.amd64.deb", destination: "/root/libbeegfs-license-8.4.1-linux.amd64.deb"
+    mach.vm.provision "shell", inline: $mgmt_script
+  end
+
+
+  config.vm.define "bee-meta" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "bee-meta"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_meta}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 1536
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "file", source: "beegfs-meta_8.4.1_amd64.deb", destination: "/root/beegfs-meta_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "libbeegfs-ib_8.4.1_amd64.deb", destination: "/root/libbeegfs-ib_8.4.1_amd64.deb"
+    mach.vm.provision "shell", inline: $meta_script
+  end
+
+
+  config.vm.define "bee-stor" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "bee-stor"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_stor}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 1536
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "file", source: "beegfs-storage_8.4.1_amd64.deb", destination: "/root/beegfs-storage_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "libbeegfs-ib_8.4.1_amd64.deb", destination: "/root/libbeegfs-ib_8.4.1_amd64.deb"
+    mach.vm.provision "shell", inline: $stor_script
+  end
+
+
+  config.vm.define "bee-cli" do |mach|
+    mach.vm.box = "cloud-image/ubuntu-24.04"
+    mach.vm.box_version = "20251126.0.0"
+    mach.vm.box_check_update = false
+
+    mach.vm.hostname = "bee-cli"
+    mach.vm.network "private_network", ip: "#{$ip_base}.#{$ip_cli}"
+
+    mach.vm.provider "libvirt" do |libvirt|
+      libvirt.memory = 1536
+      libvirt.cpus = 1
+      libvirt.machine_virtual_size = 10
+    end
+
+    mach.vm.provision "file", source: "beegfs-client_8.4.1_all.deb", destination: "/root/beegfs-client_8.4.1_all.deb"
+    mach.vm.provision "file", source: "beegfs-client-dev_8.4.1_amd64.deb", destination: "/root/beegfs-client-dev_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "beegfs-utils_8.4.1_amd64.deb", destination: "/root/beegfs-utils_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "beegfs-utils-dev_8.4.1_amd64.deb", destination: "/root/beegfs-utils-dev_8.4.1_amd64.deb"
+    mach.vm.provision "file", source: "beegfs-tools-8.4.1-linux.amd64.deb", destination: "/root/beegfs-tools-8.4.1-linux.amd64.deb"
+    mach.vm.provision "shell", inline: $cli_script
+  end
+
+end
